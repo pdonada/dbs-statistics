@@ -1,49 +1,41 @@
-library(shiny) 
+bootstrapPage(
+  
+  navbarPage(
+    
+    "MODELS:",
+    tabPanel("Navbar 1",
+             
+             sidebarPanel(
+               fileInput("file", "File input:"),
+               textInput("txt", "Text input:", "general"),
+               sliderInput("slider", "Slider input:", 1, 100, 30),
+               tags$h5("Deafult actionButton:"),
+               actionButton("action", "Search"),
+               tags$h5("actionButton with CSS class:"),
+               actionButton("action2", "Action button", class = "btn-primary")
+             ),
+             
+             mainPanel(
+               tabsetPanel(
+                 tabPanel("Tab 1",
+                          h4("Table"),
+                          tableOutput("table"),
+                          h4("Verbatim text output"),
+                          verbatimTextOutput("txtout"),
+                          h1("Header 1"),
+                          h2("Header 2"),
+                          h3("Header 3"),
+                          h4("Header 4"),
+                          h5("Header 5")
+                 ),
+                 tabPanel("Tab 2", "This panel is intentionally left blank"),
+                 tabPanel("Tab 3", "This panel is intentionally left blank")
+               )
+             )
+    ),
+    tabPanel("Navbar 2", "This panel is intentionally left blank"),
+    tabPanel("Navbar 3", "This panel is intentionally left blank")
+  )
+  
 
-
-
-shinyUI(pageWithSidebar( 
-  
-  headerPanel("Interactive plots"), 
-  
-  sidebarPanel( 
-    
-    sliderInput("s", "number of simulated data" ,min=1, max=1000, value = 10), 
-    
-    numericInput("lam", "parameter lambda in exponential" , value = 1), 
-    
-    
-    
-    numericInput("mu", "parameter mu in Normal" , value = 0), 
-    
-    numericInput("sigma", "parameter sigma in Normal" , value = 1),  
-    
-    numericInput("i", "support" , value = 0),  
-    
-    numericInput("j1", "j in exponential" , value = 0), 
-    
-    numericInput("j2", "j in Normal" , value = 0) 
-    
-  ), 
-  
-  mainPanel( 
-    
-    tabsetPanel(type = "tabs", 
-                
-                tabPanel("Plot", plotOutput("plot")), 
-                
-                tabPanel("Exp prob",verbatimTextOutput("prob")), 
-                
-                tabPanel("Table", tableOutput("tab")) 
-                
-                
-                
-                
-                
-    )  
-    
-    
-    
-  ) 
-  
-)) 
+)
