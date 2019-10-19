@@ -1,10 +1,7 @@
-bootstrapPage(
-  
-  navbarPage(
-    
+bootstrapPage(  
+  navbarPage(    
     "MODELS:",
-    tabPanel("Navbar 1",
-             
+    tabPanel("Navbar 1",             
              sidebarPanel(
                fileInput("file", "File input:"),
                textInput("txt", "Text input:", "general"),
@@ -14,7 +11,6 @@ bootstrapPage(
                tags$h5("actionButton with CSS class:"),
                actionButton("action2", "Action button", class = "btn-primary")
              ),
-             
              mainPanel(
                tabsetPanel(
                  tabPanel("Tab 1",
@@ -36,6 +32,4 @@ bootstrapPage(
     tabPanel("Navbar 2", "This panel is intentionally left blank"),
     tabPanel("Navbar 3", "This panel is intentionally left blank")
   )
-  
-
 )
