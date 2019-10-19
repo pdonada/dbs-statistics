@@ -1,7 +1,7 @@
 bootstrapPage(  
   navbarPage(    
     "MODELS:",
-    tabPanel("Navbar 1",             
+    tabPanel("Exponential",             
              sidebarPanel(
                fileInput("file", "File input:"),
                textInput("txt", "Text input:", "general"),
@@ -29,7 +29,7 @@ bootstrapPage(
                )
              )
     ),
-    tabPanel("Navbar 2", "This panel is intentionally left blank"),
-    tabPanel("Navbar 3", "This panel is intentionally left blank")
+    tabPanel("Probability", "This panel is intentionally left blank"),
+    tabPanel("Simulated", "This panel is intentionally left blank")
   )
 )
