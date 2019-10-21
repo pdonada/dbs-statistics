@@ -12,6 +12,8 @@ Walbert Fabricio de Oliveira.
 Guideline:
 •	Use R/Rstudio or Python to develop your app. 
 
+See more examples on: https://shiny.rstudio.com/gallery/
+
 Task: Development of Statistical Analytics App
 ****************************************************************************
 Instruction:
