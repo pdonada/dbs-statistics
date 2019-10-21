@@ -23,9 +23,9 @@ Your  App can be designed in the following way:
 
 •	Apply some descriptive analytics techniques on the dataset and visualize the quick insights. #Peterson
 
-•	Apply at least one probabilistic model e.g. discrete or continuous probability models on the dataset and visualize the insight.
+•	Apply at least one probabilistic model e.g. discrete or continuous probability models on the dataset and visualize the insight. #Juliana
 
-•	Implement at least one hypothesis testing context and print out the decision in the shiny dashboard.
+•	Implement at least one hypothesis testing context and print out the decision in the shiny dashboard. #Walbert
 
 •	Apply at least one type of GLMs e.g. linear regression, logistic regression, Poisson regression on the dataset and visualize the model performance using an appropriate graph, e.g. ROC, performance plot, etc. #Amanda
 
