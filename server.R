@@ -1,3 +1,5 @@
+library(shiny)
+
 function(input, output) {
   output$txtout <- renderText({
     paste(input$txt, input$slider, format(input$date), sep = ", ")
