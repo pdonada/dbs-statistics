@@ -3,7 +3,7 @@ Assingment 1 (30%)
 Deadline: 6th December 2019
 
 Group:
-Amanda; 
+Amanda McDonneli; 
 Juliana Salvadori;
 Peterson Donada;
 Walbert Fabricio de Oliveira.
