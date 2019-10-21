@@ -21,13 +21,13 @@ Your  App can be designed in the following way:
 
 •	Import the data into app. Equivalently, In-built dataset might be used for analytics.
 
-•	Apply some descriptive analytics techniques on the dataset and visualize the quick insights.
+•	Apply some descriptive analytics techniques on the dataset and visualize the quick insights. #Peterson
 
 •	Apply at least one probabilistic model e.g. discrete or continuous probability models on the dataset and visualize the insight.
 
 •	Implement at least one hypothesis testing context and print out the decision in the shiny dashboard.
 
-•	Apply at least one type of GLMs e.g. linear regression, logistic regression, Poisson regression on the dataset and visualize the model performance using an appropriate graph, e.g. ROC, performance plot, etc.
+•	Apply at least one type of GLMs e.g. linear regression, logistic regression, Poisson regression on the dataset and visualize the model performance using an appropriate graph, e.g. ROC, performance plot, etc. #Amanda
 
 •	Visualize the deep insight in dashboard environment. 
 
