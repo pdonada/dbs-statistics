@@ -6,7 +6,7 @@ library(shiny)
 
 navbarPage(    
   "MODELS:",
-  tabPanel("Exponential",             
+  tabPanel("Template",             
            sidebarPanel(
              fileInput("file", "File input:"),
              textInput("txt", "Text input:", "general"),
@@ -33,6 +33,8 @@ navbarPage(
            )
   ),
   tabPanel("Probability", "This panel is intentionally left blank"),
-  tabPanel("Simulated", "This panel is intentionally left blank")
+  tabPanel("Something", "This panel is intentionally left blank"),
+  tabPanel("Simulated", "This panel is intentionally left blank"),
+  tabPanel("Peterson", "This panel is intentionally left blank")
 )
 #) #If using fluidpage uncomment this ")".
