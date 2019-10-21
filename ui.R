@@ -13,8 +13,6 @@ navbarPage(
              sliderInput("slider", "Slider input:", 1, 100, 30),
              tags$h5("Deafult actionButton:"),
              actionButton("action", "Search"),
-             tags$h5("actionButton with CSS class:"),
-             actionButton("action2", "Action button", class = "btn-primary")
            ),
            mainPanel(
              tabsetPanel(
