@@ -1,16 +1,19 @@
-#Load Libraries
+#Loading Libraries
 library(shiny)
 library(shinythemes)
-library(leaflet)
 library(dplyr)
-library(leaflet.extras)
-library(shinythemes)
-library(sf)
-library(raster)
-library(spData)
-library(tmap) 
-library(mapview)
+library(gganimate)
 library(ggplot2)
+library(gifski)
+library(leaflet)
+library(leaflet.extras)
+library(mapview)
+library(raster)
+library(sf)
+library(spData)
+library(tidyverse)
+library(tmap) 
+
 
 
 fluidPage(theme = shinytheme("lumen"), 
@@ -42,34 +45,40 @@ navbarPage(
              )
            )
   ), ###End "tabPanel=Template"
+  
   tabPanel("Probability", "This panel is intentionally left blank"),
   tabPanel("Something", "This panel is intentionally left blank"),
   tabPanel("Simulated", "This panel is intentionally left blank"),
+  
   tabPanel("PETERSON",             
            sidebarPanel(
-             fileInput("file", "File input:"),
-             textInput("txt", "Text input:", "general"),
+             
+             fileInput('file1', 
+                       'Choose file to upload (csv)',
+                       accept = ".csv"),
+             checkboxInput('header', 'Header', TRUE),
+             radioButtons("sep", "Separator",
+                          choices = c(Comma = ",",
+                                      Semicolon = ";"),
+                          selected = ","),
+             tags$hr(),
+             
              sliderInput("slider", "Slider input:", 1, 100, 30),
              tags$h5("Deafult actionButton:"),
              actionButton("action", "Search"),
            ),
+           
            mainPanel(
              tabsetPanel(
+               tabPanel("Data Sample",
+                        h5("Generate an Extructured Table from your file"),
+                        dataTableOutput("contents")
+                ),
                tabPanel("Interactive Map",
-                        h4("Table"),
-                        tableOutput("table"),
-                        h4("Verbatim text output"),
-                        verbatimTextOutput("txtout"),
-                        h1("Header 1")
-               ),
-               
-               tabPanel("Bar Graph", 
-                        "This panel is intentionally left blank"),
-               tabPanel("Data Analisys", 
-                        "This panel is intentionally left blank")
-             )
-           )
+                      "This panel is intentionally left blank"
+                )
+              )
+           )     
   )  ###End "tabPanel=PETERSON"
-           
-)
-)
+)   ###End "navbarPage"
+)   ###End "fluidPage"
