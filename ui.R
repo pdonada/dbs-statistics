@@ -1,9 +1,19 @@
+#Load Libraries
 library(shiny)
+library(shinythemes)
+library(leaflet)
+library(dplyr)
+library(leaflet.extras)
+library(shinythemes)
+library(sf)
+library(raster)
+library(spData)
+library(tmap) 
+library(mapview)
+library(ggplot2)
 
-#library(shinythemes) #need to install.packages("shinythemes") to use. 
 
-#fluidPage(theme -= shinytheme("lumen"), #if using shinythemes, starts "ui.R" here and don't forget to close ")" in the end of the code).
-
+fluidPage(theme = shinytheme("lumen"), 
 navbarPage(    
   "MODELS:",
   tabPanel("Template",             
@@ -31,10 +41,35 @@ navbarPage(
                tabPanel("Tab 3", "This panel is intentionally left blank")
              )
            )
-  ),
+  ), ###End "tabPanel=Template"
   tabPanel("Probability", "This panel is intentionally left blank"),
   tabPanel("Something", "This panel is intentionally left blank"),
   tabPanel("Simulated", "This panel is intentionally left blank"),
-  tabPanel("Peterson", "This panel is intentionally left blank")
+  tabPanel("PETERSON",             
+           sidebarPanel(
+             fileInput("file", "File input:"),
+             textInput("txt", "Text input:", "general"),
+             sliderInput("slider", "Slider input:", 1, 100, 30),
+             tags$h5("Deafult actionButton:"),
+             actionButton("action", "Search"),
+           ),
+           mainPanel(
+             tabsetPanel(
+               tabPanel("Interactive Map",
+                        h4("Table"),
+                        tableOutput("table"),
+                        h4("Verbatim text output"),
+                        verbatimTextOutput("txtout"),
+                        h1("Header 1")
+               ),
+               
+               tabPanel("Bar Graph", 
+                        "This panel is intentionally left blank"),
+               tabPanel("Data Analisys", 
+                        "This panel is intentionally left blank")
+             )
+           )
+  )  ###End "tabPanel=PETERSON"
+           
 )
-#) #If using fluidpage uncomment this ")".
+)
