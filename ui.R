@@ -149,7 +149,8 @@ fluidPage(theme = shinytheme("lumen"),
                       mainPanel(
                         tabsetPanel(
                           tabPanel("Data Table",
-                                   h5("Generate an Extructured Table from your file"),
+                                   h5("Extructured table from your file (Millions U$"),
+                                   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
                                    DT::dataTableOutput("view1_pd")
                           ),
                           

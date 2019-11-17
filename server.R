@@ -354,10 +354,10 @@ function(input, output, session) {
     v_data_pd <- na.omit(file_read_pd)
     
     countries_pd <- data.frame(v_data_pd$country_name %>% unique())
-    #all_c_pd <- data.frame("All")
-    #names(all_c_pd)<-names(countries_pd)
-    #countries_pd2 <- rbind(all_c_pd, countries_pd)
-    Countries_pd2 <- rbind(c("All"), countries_pd)
+    all_c_pd <- data.frame("All")
+    names(all_c_pd)<-names(countries_pd)
+    countries_pd2 <- rbind(all_c_pd, countries_pd)
+    #countries_pd2 <- rbind(c("All"), countries_pd)
     
     years_pd <- data.frame(v_data_pd$year %>% unique())
     years_pd2 <- rbind(c("All"), years_pd)
