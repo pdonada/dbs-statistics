@@ -155,31 +155,31 @@ fluidPage(theme = shinytheme("lumen"),
                                mainPanel(
 									tabsetPanel(
 									  tabPanel("Data Table",
-											   h5("Extructured table from your file (Millions U$"),
+											   h5("Extructured table from your file (Millions U$)"),
 											   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
 											   DT::dataTableOutput("view1_pd")
 									  ),
 									  
 									  tabPanel("Summary",
 											   # Output: Header + summary of distribution ----
-											   h4("Summary"),
+											   h5("Summary"),
 											   verbatimTextOutput("view2_pd"),
 											   
 											   # Output: Header + table of distribution ----
-											   h4("Observations"),
+											   h5("Observations"),
 											   tableOutput("view3_pd")
 									  ),
 									  
 									  tabPanel("Mean by Country", 
-											   "Mean of GDP grouped by country",
+											   h5("Mean of GDP grouped by country"),
 											   DT::dataTableOutput("view4_pd")),
 									  
 									  tabPanel("Top 10", 
-											   "Mean of GDP grouped by country showing TOP 10 GDP",
+											   h5("Mean of GDP grouped by country showing TOP 10 GDP"),
 											   DT::dataTableOutput("view5_pd")),
 									  
 									  tabPanel("Table Config",
-											   h5("Generate an Extructured Table considering arguments"),
+											   h5("Generate a table considering arguments"),
 											   DT::dataTableOutput("view6_pd")
                                    )
                                  )
