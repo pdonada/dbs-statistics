@@ -10,6 +10,9 @@ fluidPage(theme = shinytheme("lumen"),
           
           navbarPage( "MODELS:", id = "tabs",
                       
+                      ####################################################################################################
+                      ##                                      PROBABILITY MODELS                                        ##
+                      ####################################################################################################
                       tabPanel("Probability", "",
                                
                                sidebarPanel( 
@@ -20,15 +23,13 @@ fluidPage(theme = shinytheme("lumen"),
                                              selected = "discrete" 
                                  ),
                                  
-                                 # hr(),
                                  HTML("<hr style='height: 2px; color: #F3F3F3; background-color: #F3F3F3; border: none;'>"),
                                  
-                                 selectInput("dismodel", "Select Model", 
-                                             choices = '', 
-                                             selected = "binomial" 
+                                 selectInput("dismodel", "Select Model"
+                                             , choices = selectDiscreteDist
+                                             , selected = "binomial" 
                                  ),
-                                 
-                                 # hr(),
+
                                  HTML("<hr style='height: 2px; color: #F3F3F3; background-color: #F3F3F3; border: none;'>"),
                                  
                                  h5("Parameters"),
@@ -47,20 +48,20 @@ fluidPage(theme = shinytheme("lumen"),
                                    conditionalPanel( 
                                      condition = "input.dataset == 'Gender statistics'", 
                                      
-                                     selectInput("bgender_country", "Select country", 
-                                                 choices = bdbgender_country
+                                     selectInput("bgender_series", "Select a serie"
+                                                 , choices = bdbgender_series
+                                                 , selected = " "
                                      ),
                                      
-                                     selectInput("bgender_year", "Select year", 
-                                                 choices = '' 
+                                     selectInput("bgender_country", "Select a country"
+                                                 , choices = '' 
                                      ),
                                      
-                                     selectInput("bgender_series", "Select serie", 
-                                                 choices = bdbgender_series
+                                     selectInput("bgender_year", "Select a year"
+                                                 , choices = '' 
                                      )
                                    ),
                                    
-                                   #  hr(),
                                    
                                    numericInput("n", "Number of trials (n)" , value = 10, min = 0)
                                  ), 
@@ -120,16 +121,22 @@ fluidPage(theme = shinytheme("lumen"),
                                mainPanel( 
                                  
                                  tabsetPanel(type = "tabs", 
-                                             tabPanel("Plot", textOutput("txtplot")
+                                             tabPanel("Plot"
+                                                      , textOutput("txtplotProb")
                                                       , hr()
-                                                      , plotOutput("plot")),
-                                             tabPanel("Table", DT::dataTableOutput("tab")) 
+                                                      , plotOutput("plotProb")
+                                                     ),
+                                             tabPanel("Table", DT::dataTableOutput("tabProb")) 
                                  )
                                  
                                )  # mainPanel
                                
                       ), # tabPanel probability
                       
+                      
+                      ####################################################################################################
+                      ##                                  DESCRIPTIVE ANALYSIS                                          ##
+                      ####################################################################################################
                       tabPanel("Describing Data",
                                sidebarPanel(
                                  fileInput("file1", "Choose file to upload (csv)", accept = ".csv"),
@@ -143,44 +150,57 @@ fluidPage(theme = shinytheme("lumen"),
                                  selectInput("gdp_year_pd", "Select Year:",
                                              choices = ""
                                              )
-                               )
-                      ),
+                               ),  # sidebarPanel
+                               
+                               mainPanel(
+									tabsetPanel(
+									  tabPanel("Data Table",
+											   h5("Extructured table from your file (Millions U$"),
+											   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
+											   DT::dataTableOutput("view1_pd")
+									  ),
+									  
+									  tabPanel("Summary",
+											   # Output: Header + summary of distribution ----
+											   h4("Summary"),
+											   verbatimTextOutput("view2_pd"),
+											   
+											   # Output: Header + table of distribution ----
+											   h4("Observations"),
+											   tableOutput("view3_pd")
+									  ),
+									  
+									  tabPanel("Mean by Country", 
+											   "Mean of GDP grouped by country",
+											   DT::dataTableOutput("view4_pd")),
+									  
+									  tabPanel("Top 10", 
+											   "Mean of GDP grouped by country showing TOP 10 GDP",
+											   DT::dataTableOutput("view5_pd")),
+									  
+									  tabPanel("Table Config",
+											   h5("Generate an Extructured Table considering arguments"),
+											   DT::dataTableOutput("view6_pd")
+                                   )
+                                 )
+                               ) # mainPanel
+                               
+                      ),  # tabPanel Describing Data
                       
-                      mainPanel(
-                        tabsetPanel(
-                          tabPanel("Data Table",
-                                   h5("Extructured table from your file (Millions U$"),
-                                   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
-                                   DT::dataTableOutput("view1_pd")
-                          ),
-                          
-                          tabPanel("Summary",
-                                   # Output: Header + summary of distribution ----
-                                   h4("Summary"),
-                                   verbatimTextOutput("view2_pd"),
-                                   
-                                   # Output: Header + table of distribution ----
-                                   h4("Observations"),
-                                   tableOutput("view3_pd")
-                          ),
-                          
-                          tabPanel("Mean by Country", 
-                                   "Mean of GDP grouped by country",
-                                   DT::dataTableOutput("view4_pd")),
-                          
-                          tabPanel("Top 10", 
-                                   "Mean of GDP grouped by country showing TOP 10 GDP",
-                                   DT::dataTableOutput("view5_pd")),
-                          
-                          tabPanel("Table Config",
-                                   h5("Generate an Extructured Table considering arguments"),
-                                   DT::dataTableOutput("view6_pd")
-                          )
-                        )
-                      ),
+
+                      ####################################################################################################
+                      ##                                  HYPOTHESIS TESTING                                            ##
+                      ####################################################################################################        
                       tabPanel("OtherTopic", "This panel is intentionally left blank"),
+                      
+                      
+                      ####################################################################################################
+                      ##                                  GENERALIZED LINEAR MODELS                                     ##
+                      ####################################################################################################                      
                       tabPanel("OtherTopic", "This panel is intentionally left blank")
                       
-          )
+                      
+                      
+          ) # navbarPage
           
-)
+) # fluidPage
