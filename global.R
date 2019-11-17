@@ -9,10 +9,12 @@
 library(shiny)
 library(shinythemes) 
 library(dplyr)
+if (!require("DT")) install.packages("DT")
+library(DT)
 
 ###############################################
 #        main path to find the datasets       #
-path = "C:/Users/Casa/Documents/DBS/ShinyAPP2/"
+path = "C:/Users/Casa1510/Documents/MSc Data Analytics/statistics/CA one/datasets/"
 
 ###############################################
 ##    set models that are available         ##
