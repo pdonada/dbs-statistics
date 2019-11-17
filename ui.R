@@ -201,8 +201,9 @@ fluidPage(theme = shinytheme("lumen"),
 									  tabPanel("Boxplot", 
 											  h5("Boxplot of TOP 10 GDP"),
 											  plotOutput("view7_pd"))	                                    
-                                   )
+                                   
                                  )
+                      
                                ) # mainPanel
                                
                       ),  # tabPanel Describing Data
