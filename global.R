@@ -9,7 +9,7 @@
 if (!require("shiny")) install.packages("shiny")
 if (!require("shinythemes")) install.packages("shinythemes")
 if (!require("dplyr")) install.packages("dplyr")
-if (!require("dplyr")) install.packages("plyr")
+if (!require("plyr")) install.packages("plyr")
 if (!require("WDI")) install.packages("WDI")  # World Bank Development indicators
 if (!require("DT")) install.packages("DT")
 
@@ -182,7 +182,10 @@ selectContinuousDist <- c('Normal' = 'normal'
 bdbgender_series <- c('Access to anti-retroviral drugs' = 'access'
                     , 'Progression to secondary school' = 'progression'
                     , 'Cause of death by injury - ages 15-34' = 'cause')
-
+                    
+                    
+###############################################
+# dataset 2: Population Statistics           ##
 bdbpopulation_series <- c('Malnutrition prevalence, height for age (% of children under 5)' ='malnutrition'
                          ,'People using safely managed sanitation services' = 'sanitation')
 
