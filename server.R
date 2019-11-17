@@ -15,37 +15,117 @@ function(input, output, session) {
   bdbgender <- reactive({ 
     print( paste('start reactive', input$bgender_series))  
     
+    if (input$bgender_series == ''){
+      print('end reactive')
+      return(NULL)
+    }
+    
     withProgress(message = 'Uploading data', value = 0, {
       
       switch(input$bgender_series,  
              
              access = { 
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/3)
+               
                indicatorFE = 'SH.HIV.ARTC.FE.ZS'  # Access to anti-retroviral drugs - Male 
                indicatorMA = 'SH.HIV.ARTC.MA.ZS'  # Access to anti-retroviral drugs - Female 
              }, 
              
              progression =  { 
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/3)
+               
                indicatorFE = 'SE.SEC.PROG.FE.ZS'  # Progression to secondary school - Male 
                indicatorMA = 'SE.SEC.PROG.MA.ZS'  # Progression to secondary school - Female 
              },  
              
              cause =   { 
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/3)
+               
                indicatorFE = 'SH.DTH.INJR.1534.FE.ZS'  # Cause of death by injury - ages 15-34 - Male 
                indicatorMA = 'SH.DTH.INJR.1534.MA.ZS'  # Cause of death by injury - ages 15-34 - Female 
+             },
+             
+             malnutrition =   { 
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/2)
+               
+               indicatorMAN = 'SN.SH.STA.STNT.ZS'  # Sub-National Malnutrition prevalence, height for age (% of children under 5)
+               print(paste('indicator MAN',indicatorMAN,'syear', startYear, 'eyear'=endYear))     
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(2/2)
+               
+               bdataset_populationMAN =  WDI(indicator = indicatorMAN, country = countries , start = startYear, end = endYear)
+               bdataset_populationMAN <- bdataset_populationMAN %>% na.omit()  # ignore lines with missing information
+               print(paste('nro col M', nrow(bdataset_populationMAN) ))  
+               
+               print( 'end reactive (population 1)')
+             },
+             
+             sanitation =   { 
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/3)
+               
+               indicatorUR = 'SH.STA.SMSS.UR.ZS'  # People using safely managed sanitation services, urban (% of urban population)
+               indicatorRU = 'SH.STA.SMSS.RU.ZS'  # People using safely managed sanitation services, rural (% of rural population)
+               
+               print(paste('indicator UR',indicatorUR,'syear', startYear, 'eyear'=endYear))     
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(2/3)
+               
+               bdataset_populationUR =  WDI(indicator = indicatorUR, country = countries , start = startYear, end = endYear)
+               bdataset_populationUR <- bdataset_populationUR %>% na.omit()  # ignore lines with missing information
+               print(paste('nro col M', nrow(bdataset_populationUR) ))   
+               
+               print(paste('indicator RU',indicatorRU,'syear', startYear, 'eyear'=endYear)) 
+               
+               # Increment the progress bar, and update the detail text.
+               incProgress(3/3)
+               
+               bdataset_populationRU =  WDI(indicator = indicatorRU, country = countries , start = startYear, end = endYear)
+               bdataset_populationRU <- bdataset_populationRU %>%  na.omit()  # ignore lines with missing information
+               print(paste('nro col F', nrow(bdataset_populationRU))) 
+               
+               print( paste('end reactive (population 2)', nrow( data.frame(bdataset_populationUR, bdataset_populationRU) )))
+               # group both datasets
+               data.frame(bdataset_populationUR, bdataset_populationRU)               
+               
              }
       )
       
-      print(paste('indicator',indicatorMA,'syear', startYear, 'eyear'=endYear))     
-      bdataset_genderM =  WDI(indicator = indicatorMA, country = countries , start = startYear, end = endYear)
-      bdataset_genderM <- bdataset_genderM %>% na.omit()  # ignore lines with missing information
-      print(paste('nro col M', nrow(bdataset_genderM) ))    
-      bdataset_genderF =  WDI(indicator = indicatorFE, country = countries , start = startYear, end = endYear)
-      bdataset_genderF <- bdataset_genderF %>%  na.omit()  # ignore lines with missing information
-      print(paste('nro col F', nrow(bdataset_genderF))) 
+      if ( input$bdataset == 'gender' ){
+             
+          # Increment the progress bar, and update the detail text.
+          incProgress(2/3)
+        
+          print(paste('indicator MA',indicatorMA,'syear', startYear, 'eyear'=endYear))     
+                  
+          bdataset_genderM =  WDI(indicator = indicatorMA, country = countries , start = startYear, end = endYear)
+          bdataset_genderM <- bdataset_genderM %>% na.omit()  # ignore lines with missing information
+          print(paste('nro col M', nrow(bdataset_genderM) ))   
+                  
+          # Increment the progress bar, and update the detail text.
+          incProgress(3/3)
+          
+          print(paste('indicator FE',indicatorFE,'syear', startYear, 'eyear'=endYear)) 
+          bdataset_genderF =  WDI(indicator = indicatorFE, country = countries , start = startYear, end = endYear)
+          bdataset_genderF <- bdataset_genderF %>%  na.omit()  # ignore lines with missing information
+          print(paste('nro col F', nrow(bdataset_genderF))) 
+                  
+          print( paste('end reactive (gender)', nrow( data.frame(bdataset_genderM, bdataset_genderF) )))
+          # group both datasets
+          data.frame(bdataset_genderM, bdataset_genderF)
+      }
       
-      print( paste('end reactive', nrow( data.frame(bdataset_genderM, bdataset_genderF) )))
-      # group both datasets
-      data.frame(bdataset_genderM, bdataset_genderF)
     })
     
   })  # reactive function - series
@@ -67,13 +147,35 @@ function(input, output, session) {
     ) 
   }) # observe type of model
   
+  observe({ 
+ 
+    print(paste( 'observe - list of series', input$bdataset)) 
+    
+    switch(input$bdataset,  
+           
+           gender = { 
+             bdbseries <- bdbgender_series
+           }, 
+           
+           population =  { 
+             bdbseries <- bdbpopulation_series
+           }
+    )
+    
+    updateSelectInput(session, "bgender_series"
+                     , choices = bdbseries )
+    
+    print('end observe - list of series')  
+    
+  }) # observe list of series
+  
   
   observe({ 
     
     if (input$bgender_series == "") {
       return (NULL)
     } 
-    print(paste( 'oberserve - list of countries', input$bgender_series)) 
+    print(paste( 'observe - list of countries', input$bgender_series)) 
     
     dfgender <- data.frame(bdbgender())
     
@@ -92,13 +194,23 @@ function(input, output, session) {
            cause =   { 
              # list of unique countries in the dataset
              bdbgender_country <- dfgender$country %>% unique()
+           },
+           
+           malnutrition =   { 
+             # list of unique countries in the dataset
+             bdbgender_country <- dfgender$country %>% unique()
+           },
+           
+           sanitation =   { 
+             # list of unique countries in the dataset
+             bdbgender_country <- dfgender$country %>% unique()
            }
     )
     
     updateSelectInput(session, "bgender_country"
                       , choices = bdbgender_country )
     
-    print('end oberserve - list of countries')  
+    print('end observe - list of countries')  
     
   }) # observe list of countries
   
@@ -108,7 +220,7 @@ function(input, output, session) {
     if (input$bgender_country == "") {
       return (NULL)
     } 
-    print(paste('oberserve - list of years', input$bgender_series , 'country', input$bgender_country))  
+    print(paste('observe - list of years', input$bgender_series , 'country', input$bgender_country))  
     
     dfgender <- data.frame(bdbgender())
     
@@ -130,22 +242,34 @@ function(input, output, session) {
              print('*** cause')
              # list of unique year in the dataset
              bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
+           },
+           
+           malnutrition =   { 
+             print('*** malnutrition')
+             # list of unique year in the dataset
+             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
+           },
+           
+           sanitation =   { 
+             print('*** sanitation')
+             # list of unique year in the dataset
+             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
            }
     )    
     
     updateSelectInput(session, "bgender_year"
                       , choices = bdbgender_year )
-    print('end oberserve - list of years') 
+    print('end observe - list of years') 
     
   })  # observe list of years
   
   
   # table tab
   output$tabProb <- DT::renderDataTable( {
-    print('Generating table') 
+    print(paste('Generating table -', input$bgender_series)) 
     
     if (input$dismodel == 'binomial') { 
-      if (input$dataset == 'Gender statistics'){
+      if (input$bdataset == 'gender'){
         
         switch(input$bgender_series,  
                
@@ -168,6 +292,23 @@ function(input, output, session) {
                }
         )
         
+      }else {
+        
+        switch(input$bgender_series,  
+               
+               malnutrition = { 
+                 dfgender <- data.frame(bdbgender()) #%>% 
+                #   select(country, year, SN.SH.STA.STNT.ZS) %>%   
+               #    rename( c("country" = "Country", "year" = "Year","SN.SH.STA.STNT.ZS" = "(% of children under 5)") )                 
+                 
+               },
+               
+               sanitation = {
+                 dfgender <- data.frame(bdbgender()) %>% 
+                   select(country, year, SH.STA.SMSS.UR.ZS, SH.STA.SMSS.RU.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.STA.SMSS.UR.ZS" = "(% of urban population)", "SH.STA.SMSS.RU.ZS" = "(% of rural population)") )                  
+               }
+            ) 
       }
       
     }else { "Not available"}
@@ -180,7 +321,7 @@ function(input, output, session) {
     print('Generating table by')
     
     if (input$dismodel == 'binomial') { 
-      if (input$dataset == 'Gender statistics'){
+      if (input$bdataset == 'gender'){
         
         if (input$bgender_country == "" || input$bgender_year == "") {
           return (NULL)
@@ -208,6 +349,18 @@ function(input, output, session) {
                    df %>% 
                    select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.DTH.INJR.1534.MA.ZS" = "Male(%)", "SH.DTH.INJR.1534.FE.ZS" = "Female(%)") )               
+               },
+               
+               malnutrition =   { 
+                 df %>% 
+                   select(country, year, SN.SH.STA.STNT.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SN.SH.STA.STNT.ZS)" = "(% of children under 5)" ) )               
+               },
+               
+               sanitation =   { 
+                 df %>% 
+                   select(country, year, SH.STA.SMSS.UR.ZS, SH.STA.SMSS.RU.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.STA.SMSS.UR.ZS" = "(% of urban population)", "SH.STA.SMSS.RU.ZS" = "(% of rural population)") )               
                }
         )
         
@@ -219,7 +372,13 @@ function(input, output, session) {
 
   # plot tab
   output$plotProb <- renderPlot({ 
-    print('Starting PLOT')    
+    print(paste('Starting PLOT -',input$bgender_series))  
+    
+    if (input$bgender_series == ''){
+      print('end PLOT')
+      return(NULL)
+    }
+    
     # binomial  - discrete model
     if (input$dismodel == 'binomial') { 
       
@@ -227,11 +386,11 @@ function(input, output, session) {
         probability_validation(input$n, 'n', input$dismodel)
       )
       
-      par(mfrow=c(2,2)) 
+      dfgender <- data.frame(bdbgender())
       
-      if (input$dataset == 'Gender statistics'){ 
+      if (input$bdataset == 'gender'){ 
         
-        dfgender <- data.frame(bdbgender())
+        par(mfrow=c(2,2)) 
         
         switch(input$bgender_series,  
                
@@ -269,8 +428,50 @@ function(input, output, session) {
           binomial_plot (input$s,input$n,probm,'Male') 
         }
         
+      }else if(input$bdataset == 'population'){
+        switch(input$bgender_series,  
+               
+               malnutrition = { 
+                 
+                 par(mfrow=c(1,2)) 
+                 
+                 probMan <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SN.SH.STA.STNT.Z
+                 print('Calculating MALNUTRITION probability')  
+                 if ( !is.null(probMan) ){ 
+                   probMan <- as.numeric(probMan / 100)
+                   binomial_plot (input$s,input$n,probMan,'')
+                 }
+                 
+               },
+               
+               sanitation = {
+                 
+                 par(mfrow=c(2,2)) 
+                 
+                 #### People using safely managed sanitation services, urban (% of urban population)
+                 probUR <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.STA.SMSS.UR.ZS
+                 #### People using safely managed sanitation services, rural (% of rural population)
+                 probRU <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.STA.SMSS.RU.ZS
+                 
+   
+                 print('Calculating URBAN probability') 
+                 # urban population
+                 if ( !is.null(probUR) ){ 
+                   probUR <- as.numeric(probUR / 100)
+                   binomial_plot (input$s,input$n,probUR,'Urban population')
+                 }
+                 print('Calculating RURAL probability')       
+                 # rural population
+                 if ( !is.null(probRU) ){ 
+                   probRU <- as.numeric(probRU / 100)
+                   binomial_plot (input$s,input$n,probRU,'Rutal population') 
+                 }
+                 
+               }
+        )
       }
       
+      print('end PLOT')   
     } 
     
     # poisson - discrete model

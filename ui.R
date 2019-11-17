@@ -39,27 +39,23 @@ fluidPage(theme = shinytheme("lumen"),
                                  conditionalPanel( 
                                    condition = "input.dismodel == 'binomial'", 
                                    
-                                   radioButtons("dataset", "Data set",
-                                                choices = c("Gender statistics" 
-                                                            , "diamonds"  # source: 
+                                   radioButtons("bdataset", "Data set",
+                                                choices = c("Gender statistics" = "gender"
+                                                          , "Population statistics" = "population"
                                                 )
                                                 , inline = TRUE),
                                    
-                                   conditionalPanel( 
-                                     condition = "input.dataset == 'Gender statistics'", 
+                                   selectInput("bgender_series", "Select a serie"
+                                               , choices = ""
+                                               , selected = " "
+                                   ),
                                      
-                                     selectInput("bgender_series", "Select a serie"
-                                                 , choices = bdbgender_series
-                                                 , selected = " "
-                                     ),
+                                   selectInput("bgender_country", "Select a country"
+                                               , choices = '' 
+                                   ),
                                      
-                                     selectInput("bgender_country", "Select a country"
-                                                 , choices = '' 
-                                     ),
-                                     
-                                     selectInput("bgender_year", "Select a year"
-                                                 , choices = '' 
-                                     )
+                                   selectInput("bgender_year", "Select a year"
+                                               , choices = '' 
                                    ),
                                    
                                    
@@ -123,17 +119,26 @@ fluidPage(theme = shinytheme("lumen"),
                                  tabsetPanel(type = "tabs", 
                                              tabPanel("Plot"
                                                       , conditionalPanel(     
-                                                            condition = "input.dismodel == 'binomial' & input.dataset == 'Gender statistics' & input.bgender_series == 'access'",
+                                                            condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'access'",
                                                             h5('Lets check the probability of accessing anti-retroviral drugs by gender.')
                                                         )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.dataset == 'Gender statistics' & input.bgender_series == 'progression'",
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'progression'",
                                                         h5('Lets check the probability of progressing to secondary school by gender.')
                                                       )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.dataset == 'Gender statistics' & input.bgender_series == 'cause'",
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'cause'",
                                                         h5('Lets check the probability that the cause of death is injury by gender.')
                                                       )
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'malnutrition'",
+                                                        h5('Lets check the probability of malnutrition prevalence, height for age (% of children under 5).')
+                                                      )
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'sanitation'",
+                                                        h5('Lets check the probability of people using safely managed sanitation services on urban and rural areas.')
+                                                      )                                              
+                                                      
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'binomial'",
                                                         h6('Data source: http://datatopics.worldbank.org/world-development-indicators/')

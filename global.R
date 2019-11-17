@@ -9,12 +9,14 @@
 if (!require("shiny")) install.packages("shiny")
 if (!require("shinythemes")) install.packages("shinythemes")
 if (!require("dplyr")) install.packages("dplyr")
+if (!require("dplyr")) install.packages("plyr")
 if (!require("WDI")) install.packages("WDI")  # World Bank Development indicators
 if (!require("DT")) install.packages("DT")
 
 library(shiny)
 library(shinythemes) 
 library(dplyr)
+library(plyr)
 library(WDI)
 library(DT)
 
@@ -162,10 +164,12 @@ countries <- c(
 ##    set models that are available         ##
 ##    by type of distribuiton               ##
 selectDiscreteDist <- c('Binomial' = 'binomial'
-                        ,'Poisson' = 'poisson')
+                    #    ,'Poisson' = 'poisson'
+                        )
 
 selectContinuousDist <- c('Normal' = 'normal'
-                          , 'Exponential' = 'exponential')
+                      #  , 'Exponential' = 'exponential'
+                        )
 
 ###############################################
 ##          binomial datasets                ##
@@ -176,8 +180,11 @@ selectContinuousDist <- c('Normal' = 'normal'
 
 # list of series available
 bdbgender_series <- c('Access to anti-retroviral drugs' = 'access'
-                      , 'Progression to secondary school' = 'progression'
-                      , 'Cause of death by injury - ages 15-34' = 'cause')
+                    , 'Progression to secondary school' = 'progression'
+                    , 'Cause of death by injury - ages 15-34' = 'cause')
+
+bdbpopulation_series <- c('Malnutrition prevalence, height for age (% of children under 5)' ='malnutrition'
+                         ,'People using safely managed sanitation services' = 'sanitation')
 
 startYear = 2008
 endYear = 2018
