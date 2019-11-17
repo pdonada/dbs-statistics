@@ -242,100 +242,135 @@ function(input, output, session) {
     
   })   
   
+  
   #############################
   ###Render Data Display navtab
+
   output$view1_pd <- DT::renderDataTable({
-    inFile <- input$file1
+    inFile_pd <- input$file1
     
-    if (is.null(inFile))
+    if (is.null(inFile_pd))
       return(NULL)
     
-    read.csv(inFile$datapath, header = input$header,
-             sep = input$sep, quote = input$quote)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                              sep = input$sep, quote = input$quote)
+    
+    v_data_pd <- na.omit(file_read_pd)
   })  
   
   # Generate a summary of the dataset ----
   output$view2_pd <- renderPrint({
-    inFile <- input$file1
+    inFile_pd <- input$file1
     
-    if (is.null(inFile))
+    if (is.null(inFile_pd))
       return(NULL)
     
-    dataset <- read.csv(inFile$datapath, header = input$header,
-                        sep = input$sep, quote = input$quote)
-    summary(dataset)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                              sep = input$sep, quote = input$quote)
+    
+    v_data_pd <- na.omit(file_read_pd)
+    
+    summary(v_data_pd)
   })
   
   # Show the first "n" observations ----
   output$view3_pd <- renderTable({
-    inFile <- input$file1
+    inFile_pd <- input$file1
     
-    if (is.null(inFile))
+    if (is.null(inFile_pd))
       return(NULL)
     
-    dataset <- read.csv(inFile$datapath, header = input$header,
-                        sep = input$sep, quote = input$quote)
-    head(dataset)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    
+    v_data_pd <- na.omit(file_read_pd)
+    
+    head(v_data_pd)
   })
   
   # Show the first "n" observations ----
   output$view4_pd <- DT::renderDataTable({
-    inFile <- input$file1
+    inFile_pd <- input$file1
     
-    if (is.null(inFile))
+    if (is.null(inFile_pd))
       return(NULL)
     
-    v_file1 <- read.csv(inFile$datapath, header = input$header,
-                        sep = input$sep, quote = input$quote)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
     
-    #exclude NA from dataset
-    v_data <- na.omit(v_file1)
+    v_data_pd <- na.omit(file_read_pd)
     
     #grouping by country/mean
-    v_countrym <- aggregate(v_data[, 4], list(v_data$country_name), mean, 0)
+    v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
   })
   
   output$view5_pd <- DT::renderDataTable({
-    inFile <- input$file1
+    inFile_pd <- input$file1
     
-    if (is.null(inFile))
+    if (is.null(inFile_pd))
       return(NULL)
     
-    v_file1 <- read.csv(inFile$datapath, header = input$header,
-                        sep = input$sep, quote = input$quote)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
     
-    #exclude NA from dataset
-    v_data <- na.omit(v_file1)
+    v_data_pd <- na.omit(file_read_pd)
     
     #grouping by country/mean
-    v_countrym <- aggregate(v_data[, 4], list(v_data$country_name), mean, 0)
+    v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
     
-    v_countryorder <- v_countrym[with(v_countrym,order(-x)),]
-    v_countryorder <- v_countryorder[1:10,]
+    v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
+    v_countryorder_pd <- v_countryorder_pd[1:10,]
   })
   
+  ###Table listing by something
   output$view6_pd <- DT::renderDataTable({
-    inFile <- input$file1
+    inFile_pd <- input$file1
     
-    if (is.null(inFile))
+    if (is.null(inFile_pd))
       return(NULL)
     
-    v_file1 <- read.csv(inFile$datapath, header = input$header,
-                        sep = input$sep, quote = input$quote)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    v_data_pd <- na.omit(file_read_pd)
     
-    #exclude NA from dataset
-    v_data <- na.omit(v_file1)
+    if (input$gdp_country_pd != "All" & input$gdp_year_pd != "All") {
+      gdp_filter_pd <- v_data_pd[v_data_pd$country_name == input$gdp_country_pd & 
+                                   v_data_pd$year == input$gdp_year_pd,]
+    }else if (input$gdp_country_pd != "All" & input$gdp_year_pd == "All") {
+      gdp_filter_pd <- v_data_pd[v_data_pd$country_name == input$gdp_country_pd,]
+    }else if (input$gdp_country_pd == "All" & input$gdp_year_pd != "All") {
+      gdp_filter_pd <- v_data_pd[v_data_pd$year == input$gdp_year_pd,]
+    }else {gdp_filter_pd <- v_data_pd
+    }
     
-    # Change values for input$inSelect
-    s_options <- list()
-    v_year <- input$year
-    updateSelectInput(session, "inSelect",
-                      choices = s_options,
-                      selected = paste0("option-", v_year, "-A")
-    )
-    ?list
+})
+  
+  observe({ 
+    inFile_pd <- input$file1
+    if (is.null(inFile_pd))
+      return(NULL)
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    v_data_pd <- na.omit(file_read_pd)
+    
+    countries_pd <- data.frame(v_data_pd$country_name %>% unique())
+    #all_c_pd <- data.frame("All")
+    #names(all_c_pd)<-names(countries_pd)
+    #countries_pd2 <- rbind(all_c_pd, countries_pd)
+    Countries_pd2 <- rbind(c("All"), countries_pd)
+    
+    years_pd <- data.frame(v_data_pd$year %>% unique())
+    years_pd2 <- rbind(c("All"), years_pd)
+    
+    updateSelectInput(session, "gdp_country_pd", 
+                      choices = countries_pd2)
+    updateSelectInput(session, "gdp_year_pd", 
+                      choices = years_pd2)  
     
   })
   
-
+  
+  
+  
+  
 }

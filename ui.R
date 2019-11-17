@@ -137,9 +137,12 @@ fluidPage(theme = shinytheme("lumen"),
                                  radioButtons("sep", "Separator", choices = c(Comma = ",", Semicolon = ";"), selected = ","),
                                  radioButtons('quote', 'Quote', c(None='', 'Double Quote'='"', 'Single Quote'="'"), '"'),
                                  tags$hr(),
-                                 selectInput("inSelect", "Select Year:",
-                                             c("2009" = "2009",
-                                               "2010" = "2010"))
+                                 selectInput("gdp_country_pd", "Select country", 
+                                             choices = ""
+                                             ),  
+                                 selectInput("gdp_year_pd", "Select Year:",
+                                             choices = ""
+                                             )
                                )
                       ),
                       
@@ -181,4 +184,4 @@ fluidPage(theme = shinytheme("lumen"),
                       
           )
           
-) 
+)
