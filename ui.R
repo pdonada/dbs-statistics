@@ -154,7 +154,7 @@ fluidPage(theme = shinytheme("lumen"),
                                    DT::dataTableOutput("view1_pd")
                           ),
                           
-                          tabPanel("Data Analysis",
+                          tabPanel("Summary",
                                    # Output: Header + summary of distribution ----
                                    h4("Summary"),
                                    verbatimTextOutput("view2_pd"),
@@ -165,17 +165,15 @@ fluidPage(theme = shinytheme("lumen"),
                           ),
                           
                           tabPanel("Mean by Country", 
-                                   h4("Observations"),
-                                   "This panel is intentionally left blank",
+                                   "Mean of GDP grouped by country",
                                    DT::dataTableOutput("view4_pd")),
                           
                           tabPanel("Top 10", 
-                                   h4("Observations"),
-                                   "This panel is intentionally left blank",
+                                   "Mean of GDP grouped by country showing TOP 10 GDP",
                                    DT::dataTableOutput("view5_pd")),
                           
-                          tabPanel("By Country",
-                                   h5("Generate an Extructured Table from your file"),
+                          tabPanel("Table Config",
+                                   h5("Generate an Extructured Table considering arguments"),
                                    DT::dataTableOutput("view6_pd")
                           )
                         )
