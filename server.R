@@ -6,20 +6,50 @@
 ##
 ###############################################
 
-binomial_plot <- function (i_population, i_trials, i_prob, i_gender) {
-  d <- density( rbinom( n = i_population, size = i_trials, prob = i_prob) )  # simulation  (s = number of observations ) 
-  x <- 0:i_trials  
-  y <- dbinom(x,i_trials,i_prob)  # pmf
-  
-  plot(d, main="Kernel Density of generated data", sub = i_gender) 
-  polygon(d, col="red", border="blue") 
-  
-  plot(x, y , main = "Probability mass function", sub = i_gender, xlab= "Number of trials", ylab= "Probability")  # pmf
-  
-}
-
-
 function(input, output, session) {
+  
+  ##########################################################################################################
+  ###Render Probability navtab 
+  ##########################################################################################################
+  
+  bdbgender <- reactive({ 
+    print( paste('start reactive', input$bgender_series))  
+    
+    withProgress(message = 'Uploading data', value = 0, {
+      
+      switch(input$bgender_series,  
+             
+             access = { 
+               indicatorFE = 'SH.HIV.ARTC.FE.ZS'  # Access to anti-retroviral drugs - Male 
+               indicatorMA = 'SH.HIV.ARTC.MA.ZS'  # Access to anti-retroviral drugs - Female 
+             }, 
+             
+             progression =  { 
+               indicatorFE = 'SE.SEC.PROG.FE.ZS'  # Progression to secondary school - Male 
+               indicatorMA = 'SE.SEC.PROG.MA.ZS'  # Progression to secondary school - Female 
+             },  
+             
+             cause =   { 
+               indicatorFE = 'SH.DTH.INJR.1534.FE.ZS'  # Cause of death by injury - ages 15-34 - Male 
+               indicatorMA = 'SH.DTH.INJR.1534.MA.ZS'  # Cause of death by injury - ages 15-34 - Female 
+             }
+      )
+      
+      print(paste('indicator',indicatorMA,'syear', startYear, 'eyear'=endYear))     
+      bdataset_genderM =  WDI(indicator = indicatorMA, country = countries , start = startYear, end = endYear)
+      bdataset_genderM <- bdataset_genderM %>% na.omit()  # ignore lines with missing information
+      print(paste('nro col M', nrow(bdataset_genderM) ))    
+      bdataset_genderF =  WDI(indicator = indicatorFE, country = countries , start = startYear, end = endYear)
+      bdataset_genderF <- bdataset_genderF %>%  na.omit()  # ignore lines with missing information
+      print(paste('nro col F', nrow(bdataset_genderF))) 
+      
+      print( paste('end reactive', nrow( data.frame(bdataset_genderM, bdataset_genderF) )))
+      # group both datasets
+      data.frame(bdataset_genderM, bdataset_genderF)
+    })
+    
+  })  # reactive function - series
+  
   
   observe({ 
     switch(input$distype,
@@ -35,46 +65,116 @@ function(input, output, session) {
              )
            }
     ) 
-  })
+  }) # observe type of model
   
   
   observe({ 
     
-    # list of unique year in the dataset
-    bdbgender_year <- bdbgender[ bdbgender$Country.Name == input$bgender_country, ]$Time %>% unique()
+    if (input$bgender_series == "") {
+      return (NULL)
+    } 
+    print(paste( 'oberserve - list of countries', input$bgender_series)) 
     
-    updateSelectInput(session, "bgender_year", 
-                      choices = bdbgender_year )
+    dfgender <- data.frame(bdbgender())
     
-  })
+    switch(input$bgender_series,  
+           
+           access = { 
+             # list of unique countries in the dataset
+             bdbgender_country <- dfgender$country %>% unique()
+           }, 
+           
+           progression =  { 
+             # list of unique countries in the dataset
+             bdbgender_country <- dfgender$country %>% unique()
+           },  
+           
+           cause =   { 
+             # list of unique countries in the dataset
+             bdbgender_country <- dfgender$country %>% unique()
+           }
+    )
+    
+    updateSelectInput(session, "bgender_country"
+                      , choices = bdbgender_country )
+    
+    print('end oberserve - list of countries')  
+    
+  }) # observe list of countries
   
   
-  # library(shinysky)
-  #  observe({
-  #    if(input$dismodel == "binomial"){
-  #      if(input$n <= 0 ){
-  #        showshinyalert(session,"shinyalert6",
-  #                       "Looks like something is wrong in your parameters, please check them and then hit submit again",
-  #                       "danger")
-  #      }else return()
-  #    }else return()
-  #  })
+  observe({ 
+    
+    if (input$bgender_country == "") {
+      return (NULL)
+    } 
+    print(paste('oberserve - list of years', input$bgender_series , 'country', input$bgender_country))  
+    
+    dfgender <- data.frame(bdbgender())
+    
+    switch(input$bgender_series,  
+           
+           access = {
+             print('*** access')
+             # list of unique year in the dataset
+             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
+           }, 
+           
+           progression =  { 
+             print('*** progression')
+             # list of unique year in the dataset
+             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
+           },  
+           
+           cause =   { 
+             print('*** cause')
+             # list of unique year in the dataset
+             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
+           }
+    )    
+    
+    updateSelectInput(session, "bgender_year"
+                      , choices = bdbgender_year )
+    print('end oberserve - list of years') 
+    
+  })  # observe list of years
   
   
   # table tab
-  output$tab <- DT::renderDataTable( {
+  output$tabProb <- DT::renderDataTable( {
     
     if (input$dismodel == 'binomial') { 
       if (input$dataset == 'Gender statistics'){
         
-        bdbgender  # from global.R
+        print('Generating table')        
+        switch(input$bgender_series,  
+               
+               access = { 
+                 dfgender <- data.frame(bdbgender()) %>% 
+                   select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)
+                 #  %>%   rename( replace = c('SH.HIV.ARTC.MA.ZS' = 'Male(%)') ) #, SH.HIV.ARTC.FE.ZS = Female)
+               }, 
+               
+               progression =  { 
+                 dfgender <- data.frame(bdbgender()) %>% 
+                   select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS)
+                 #  %>%   rename( replace = c('SH.HIV.ARTC.MA.ZS' = 'Male(%)') ) #, SH.HIV.ARTC.FE.ZS = Female)                 
+               },  
+               
+               cause =   { 
+                 dfgender <- data.frame(bdbgender()) %>% 
+                   select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS)
+                 #  %>%   rename( replace = c('SH.HIV.ARTC.MA.ZS' = 'Male(%)') ) #, SH.HIV.ARTC.FE.ZS = Female)                 
+               }
+        )
+        
       }
       
     }else { "Not available"}
     
-  }) 
+  }) # output$tabProb 
   
-  output$txtplot <- renderPrint({
+  output$txtplotProb <- renderPrint({
     
     # binomial  - discrete model
     if (input$dismodel == 'binomial') { 
@@ -92,12 +192,12 @@ function(input, output, session) {
       }
     }
     
-  } )
+  } )  # output$txtplotProb
   
   
   # plot tab
-  output$plot <- renderPlot({ 
-    
+  output$plotProb <- renderPlot({ 
+    print('Starting PLOT')    
     # binomial  - discrete model
     if (input$dismodel == 'binomial') { 
       
@@ -109,29 +209,39 @@ function(input, output, session) {
       
       if (input$dataset == 'Gender statistics'){ 
         
+        dfgender <- data.frame(bdbgender())
         
         switch(input$bgender_series,  
                
-               access = { colFemale = 5
-               colMale   = 6 }, 
+               access = { 
+                 #### female
+                 probf <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.HIV.ARTC.FE.ZS
+                 #### male
+                 probm <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.HIV.ARTC.MA.ZS
+               }, 
                
-               progression =  { colFemale = 7
-               colMale   = 8 },  
+               progression =  { 
+                 #### female
+                 probf <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SE.SEC.PROG.FE.ZS
+                 #### male
+                 probm <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SE.SEC.PROG.MA.ZS
+               },  
                
-               cause =   { colFemale = 9
-               colMale   = 10 }
+               cause =   { 
+                 #### female
+                 probf <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.DTH.INJR.1534.FE.ZS
+                 #### male
+                 probm <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.DTH.INJR.1534.MA.ZS
+               }
         )
-        
-        
+        print('Calculating FEMALE probability')            
         #### female
-        probf <- bdbgender[ bdbgender$Country.Name == input$bgender_country & bdbgender$Time == input$bgender_year, ][colFemale]
         if ( !is.null(probf) ){ 
           probf <- as.numeric(probf / 100)
           binomial_plot (input$s,input$n,probf,'Female')
         }
-        
+        print('Calculating MALE probability')            
         #### male
-        probm <- bdbgender[ bdbgender$Country.Name == input$bgender_country & bdbgender$Time == input$bgender_year, ][colMale]
         if ( !is.null(probm) ){ 
           probm <- as.numeric(probm / 100)
           binomial_plot (input$s,input$n,probm,'Male') 
@@ -240,11 +350,12 @@ function(input, output, session) {
       plot(x, y1, type='l', main = "Cumulative density function" , xlab = "" , ylab = "Cumulative probability",col='red')  
     } 
     
-  })   
+  })    # output$plotProb
   
   
-  #############################
+  ##########################################################################################################
   ###Render Data Display navtab
+  ##########################################################################################################
 
   output$view1_pd <- DT::renderDataTable({
     inFile_pd <- input$file1
@@ -354,10 +465,10 @@ function(input, output, session) {
     v_data_pd <- na.omit(file_read_pd)
     
     countries_pd <- data.frame(v_data_pd$country_name %>% unique())
-    all_c_pd <- data.frame("All")
-    names(all_c_pd)<-names(countries_pd)
-    countries_pd2 <- rbind(all_c_pd, countries_pd)
-    #countries_pd2 <- rbind(c("All"), countries_pd)
+    #all_c_pd <- data.frame("All")
+    #names(all_c_pd)<-names(countries_pd)
+    #countries_pd2 <- rbind(all_c_pd, countries_pd)
+    Countries_pd2 <- rbind(c("All"), countries_pd)
     
     years_pd <- data.frame(v_data_pd$year %>% unique())
     years_pd2 <- rbind(c("All"), years_pd)
@@ -369,7 +480,15 @@ function(input, output, session) {
     
   })
   
+  ##########################################################################################################
+  ###Render HYPOTHESIS TESTING navtab
+  ##########################################################################################################
   
+  
+  
+  ##########################################################################################################
+  ###Render GENERALIZED LINEAR MODELS navtab
+  ##########################################################################################################  
   
   
   
