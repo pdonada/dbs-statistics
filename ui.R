@@ -122,11 +122,27 @@ fluidPage(theme = shinytheme("lumen"),
                                  
                                  tabsetPanel(type = "tabs", 
                                              tabPanel("Plot"
-                                                      , textOutput("txtplotProb")
+                                                      , conditionalPanel(     
+                                                            condition = "input.dismodel == 'binomial' & input.dataset == 'Gender statistics' & input.bgender_series == 'access'",
+                                                            h5('Lets check the probability of accessing anti-retroviral drugs by gender.')
+                                                        )
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'binomial' & input.dataset == 'Gender statistics' & input.bgender_series == 'progression'",
+                                                        h5('Lets check the probability of progressing to secondary school by gender.')
+                                                      )
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'binomial' & input.dataset == 'Gender statistics' & input.bgender_series == 'cause'",
+                                                        h5('Lets check the probability that the cause of death is injury by gender.')
+                                                      )
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'binomial'",
+                                                        h6('Data source: http://datatopics.worldbank.org/world-development-indicators/')
+                                                      )
                                                       , hr()
                                                       , plotOutput("plotProb")
                                                      ),
-                                             tabPanel("Table", DT::dataTableOutput("tabProb")) 
+                                             tabPanel("Data table", DT::dataTableOutput("tabProbBy")),
+                                             tabPanel("Data table (full)", DT::dataTableOutput("tabProb")) 
                                  )
                                  
                                )  # mainPanel
@@ -179,7 +195,7 @@ fluidPage(theme = shinytheme("lumen"),
 											   DT::dataTableOutput("view5_pd")),
 									  
 									  tabPanel("Table Config",
-											   h5("Generate a table considering arguments"),
+											   h5("Table generated considering arguments selected"),
 											   DT::dataTableOutput("view6_pd")
                                    )
                                  )

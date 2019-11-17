@@ -142,29 +142,29 @@ function(input, output, session) {
   
   # table tab
   output$tabProb <- DT::renderDataTable( {
+    print('Generating table') 
     
     if (input$dismodel == 'binomial') { 
       if (input$dataset == 'Gender statistics'){
         
-        print('Generating table')        
         switch(input$bgender_series,  
                
                access = { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)
-                 #  %>%   rename( replace = c('SH.HIV.ARTC.MA.ZS' = 'Male(%)') ) #, SH.HIV.ARTC.FE.ZS = Female)
+                   select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)  %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.HIV.ARTC.MA.ZS" = "Male(%)", "SH.HIV.ARTC.FE.ZS" = "Female(%)") )
                }, 
                
                progression =  { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS)
-                 #  %>%   rename( replace = c('SH.HIV.ARTC.MA.ZS' = 'Male(%)') ) #, SH.HIV.ARTC.FE.ZS = Female)                 
+                   select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SE.SEC.PROG.FE.ZS" = "Male(%)", "SE.SEC.PROG.FE.ZS" = "Female(%)") )                
                },  
                
                cause =   { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS)
-                 #  %>%   rename( replace = c('SH.HIV.ARTC.MA.ZS' = 'Male(%)') ) #, SH.HIV.ARTC.FE.ZS = Female)                 
+                   select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.DTH.INJR.1534.MA.ZS" = "Male(%)", "SH.DTH.INJR.1534.FE.ZS" = "Female(%)") )               
                }
         )
         
@@ -174,27 +174,49 @@ function(input, output, session) {
     
   }) # output$tabProb 
   
-  output$txtplotProb <- renderPrint({
+  
+  # table tab
+  output$tabProbBy <- DT::renderDataTable( {
+    print('Generating table by')
     
-    # binomial  - discrete model
     if (input$dismodel == 'binomial') { 
-      if (input$dataset == 'Gender statistics'){ 
+      if (input$dataset == 'Gender statistics'){
         
+        if (input$bgender_country == "" || input$bgender_year == "") {
+          return (NULL)
+        } 
+        
+        print(paste('Country',input$bgender_country,'Year',input$bgender_year))
+        df <- data.frame(bdbgender())
+        df <- df[ df$country == input$bgender_country & df$year == input$bgender_year, ]
+       
         switch(input$bgender_series,  
                
-               access = { print('Lets check the probability of accessing anti-retroviral drugs by gender.') }, 
+               access = { 
+                   df %>% 
+                   select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)  %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.HIV.ARTC.MA.ZS" = "Male(%)", "SH.HIV.ARTC.FE.ZS" = "Female(%)") )
+               }, 
                
-               progression =  { print('Lets check the probability of progressing to secondary school by gender.') },  
+               progression =  { 
+                   df %>% 
+                   select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SE.SEC.PROG.FE.ZS" = "Male(%)", "SE.SEC.PROG.FE.ZS" = "Female(%)") )                
+               },  
                
-               cause =   { print('Lets check the probability that the cause of death is injury by gender.') }
+               cause =   { 
+                   df %>% 
+                   select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.DTH.INJR.1534.MA.ZS" = "Male(%)", "SH.DTH.INJR.1534.FE.ZS" = "Female(%)") )               
+               }
         )
         
       }
-    }
+      
+    }else { "Not available"}
     
-  } )  # output$txtplotProb
-  
-  
+  }) # output$tabProb 
+
   # plot tab
   output$plotProb <- renderPlot({ 
     print('Starting PLOT')    
@@ -367,6 +389,14 @@ function(input, output, session) {
                               sep = input$sep, quote = input$quote)
     
     v_data_pd <- na.omit(file_read_pd)
+    
+    v_data_pd  %>% 
+       rename ( c("country_name" = "Country" 
+                  , "country_code" = "Country code"
+                  , "year" = "Year"
+                  , "gdp_usd" = "GDP (Millions U$)"
+                  , "latitude" = "Latitude"
+                  , "longitude" = "Longitude") )
   })  
   
   # Generate a summary of the dataset ----
@@ -413,6 +443,10 @@ function(input, output, session) {
     
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
+    
+    v_countrym_pd  %>% 
+      rename ( c("Group.1" = "Country"
+                 ,"x" = "Mean"))
   })
   
   output$view5_pd <- DT::renderDataTable({
@@ -431,6 +465,10 @@ function(input, output, session) {
     
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
+    
+    v_countryorder_pd  %>% 
+      rename ( c("Group.1" = "Country"
+                 ,"x" = "Mean"))
   })
   
   ###Table listing by something
@@ -445,15 +483,25 @@ function(input, output, session) {
     v_data_pd <- na.omit(file_read_pd)
     
     if (input$gdp_country_pd != "All" & input$gdp_year_pd != "All") {
-      gdp_filter_pd <- v_data_pd[v_data_pd$country_name == input$gdp_country_pd & 
+      gdp_filter_pd <- v_data_pd[v_data_pd$country_name == input$gdp_country_pd &
                                    v_data_pd$year == input$gdp_year_pd,]
+      
     }else if (input$gdp_country_pd != "All" & input$gdp_year_pd == "All") {
       gdp_filter_pd <- v_data_pd[v_data_pd$country_name == input$gdp_country_pd,]
+      
     }else if (input$gdp_country_pd == "All" & input$gdp_year_pd != "All") {
       gdp_filter_pd <- v_data_pd[v_data_pd$year == input$gdp_year_pd,]
+      
     }else {gdp_filter_pd <- v_data_pd
     }
     
+    gdp_filter_pd  %>% 
+      rename ( c("country_name" = "Country" 
+                 , "country_code" = "Country code"
+                 , "year" = "Year"
+                 , "gdp_usd" = "GDP (Millions U$)"
+                 , "latitude" = "Latitude"
+                 , "longitude" = "Longitude") )
 })
   
   observe({ 
