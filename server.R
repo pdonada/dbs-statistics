@@ -389,7 +389,6 @@ function(input, output, session) {
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                               sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
-    
     v_data_pd  %>% 
        rename ( c("country_name" = "Country" 
                   , "country_code" = "Country code"

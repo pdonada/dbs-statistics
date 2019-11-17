@@ -9,12 +9,14 @@
 if (!require("shiny")) install.packages("shiny")
 if (!require("shinythemes")) install.packages("shinythemes")
 if (!require("dplyr")) install.packages("dplyr")
+if (!require("plyr")) install.packages("dplyr")
 if (!require("WDI")) install.packages("WDI")  # World Bank Development indicators
 if (!require("DT")) install.packages("DT")
 
 library(shiny)
 library(shinythemes) 
 library(dplyr)
+library(plyr)
 library(WDI)
 library(DT)
 

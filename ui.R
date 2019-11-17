@@ -195,7 +195,7 @@ fluidPage(theme = shinytheme("lumen"),
 											   DT::dataTableOutput("view5_pd")),
 
 									  tabPanel("Table Config",
-											   h5("Generate a table considering arguments"),
+									           h5("Table generated considering arguments selected"),
 											   DT::dataTableOutput("view6_pd")),
 											   
 									  tabPanel("Boxplot", 
