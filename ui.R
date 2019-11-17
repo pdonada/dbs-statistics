@@ -177,11 +177,15 @@ fluidPage(theme = shinytheme("lumen"),
 									  tabPanel("Top 10", 
 											   h5("Mean of GDP grouped by country showing TOP 10 GDP"),
 											   DT::dataTableOutput("view5_pd")),
-									  
+
 									  tabPanel("Table Config",
 											   h5("Generate a table considering arguments"),
-											   DT::dataTableOutput("view6_pd")
-                                   )
+											   DT::dataTableOutput("view6_pd")),
+											   
+  								  tabPanel("Boxplot", 
+  								          h5("Boxplot of TOP 10 GDP"),
+  								          plotOutput("view7_pd"))	   
+                                   
                                  )
                                ) # mainPanel
                                

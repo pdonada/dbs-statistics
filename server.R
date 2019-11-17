@@ -365,11 +365,10 @@ function(input, output, session) {
     
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                               sep = input$sep, quote = input$quote)
-    
     v_data_pd <- na.omit(file_read_pd)
   })  
   
-  # Generate a summary of the dataset ----
+  #TAB: Summary - Summary
   output$view2_pd <- renderPrint({
     inFile_pd <- input$file1
     
@@ -378,13 +377,12 @@ function(input, output, session) {
     
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                               sep = input$sep, quote = input$quote)
-    
     v_data_pd <- na.omit(file_read_pd)
     
     summary(v_data_pd)
   })
   
-  # Show the first "n" observations ----
+  #TAB:  Summary - Head
   output$view3_pd <- renderTable({
     inFile_pd <- input$file1
     
@@ -393,13 +391,12 @@ function(input, output, session) {
     
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
-    
     v_data_pd <- na.omit(file_read_pd)
     
     head(v_data_pd)
   })
   
-  # Show the first "n" observations ----
+  #TAB: Country by mean
   output$view4_pd <- DT::renderDataTable({
     inFile_pd <- input$file1
     
@@ -408,13 +405,13 @@ function(input, output, session) {
     
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
-    
     v_data_pd <- na.omit(file_read_pd)
     
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
   })
   
+  #TAB: Top 10
   output$view5_pd <- DT::renderDataTable({
     inFile_pd <- input$file1
     
@@ -423,17 +420,15 @@ function(input, output, session) {
     
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
-    
     v_data_pd <- na.omit(file_read_pd)
     
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
-    
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
   })
   
-  ###Table listing by something
+  #TAB: Table Config
   output$view6_pd <- DT::renderDataTable({
     inFile_pd <- input$file1
     
@@ -456,6 +451,25 @@ function(input, output, session) {
     
 })
   
+  ##TAB: Top Boxplot
+  output$view7_pd <- renderPlot({
+    inFile_pd <- input$file1
+    
+    if (is.null(inFile_pd))
+      return(NULL)
+    
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    v_data_pd <- na.omit(file_read_pd)
+    
+    #grouping by country/mean
+    v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
+    v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
+    v_countryorder_pd <- v_countryorder_pd[1:10,]
+
+})
+  
+  #Creating choices for Country and Year
   observe({ 
     inFile_pd <- input$file1
     if (is.null(inFile_pd))
@@ -468,7 +482,6 @@ function(input, output, session) {
     all_c_pd <- data.frame("All")
     names(all_c_pd)<-names(countries_pd)
     countries_pd2 <- rbind(all_c_pd, countries_pd)
-    #countries_pd2 <- rbind(c("All"), countries_pd)
     
     years_pd <- data.frame(v_data_pd$year %>% unique())
     years_pd2 <- rbind(c("All"), years_pd)
@@ -477,7 +490,6 @@ function(input, output, session) {
                       choices = countries_pd2)
     updateSelectInput(session, "gdp_year_pd", 
                       choices = years_pd2)  
-    
   })
   
   ##########################################################################################################
