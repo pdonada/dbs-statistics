@@ -567,7 +567,6 @@ function(input, output, session) {
     
     DT::datatable(v_countrym_pd)  %>% 
       formatCurrency(c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
-        
   })
   
   #TAB: Top 10
@@ -586,10 +585,13 @@ function(input, output, session) {
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
     
-    v_countryorder_pd  %>% 
+    v_countryorder_pd <- v_countryorder_pd  %>% 
       rename ( c("Group.1" = "Country"
-                 ,"x" = "Mean"))
-  })
+                 ,"x" = "Mean")) 
+    
+    DT::datatable(v_countryorder_pd)  %>% 
+      formatCurrency(c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
+    })
   
   #TAB: Table Config
   output$view6_pd <- DT::renderDataTable({
@@ -667,14 +669,14 @@ function(input, output, session) {
     
     lbls <- factor(v_countryorder_pd[ ,1])
     slices <- round(v_countryorder_pd$x/1000)
-    slicestril <- prettyNum(c(round(slices)), big.mark = ",", decimal.mark = ".")
+    #slicestril <- prettyNum(c(round(slices)), big.mark = ",", decimal.mark = ".")
     #lbls <- paste(lbls, slicestril) 
     #lbls <- paste(lbls,"T",sep="") # ad % to labels
-    
+    head(slices)
     par(las=2) # make label text perpendicular to axis
     par(mar=c(5,9,4,2)) # increase y-axis margin.
     barplot(slices, names.arg = lbls, col=rainbow(length(lbls)), horiz=TRUE, 
-            legend=slicestril, args.legend = list(x = "topright"))
+            legend=slices, args.legend = list(x = "topright"))
     })    
   
   ##TAB: Heat Map
@@ -688,7 +690,9 @@ function(input, output, session) {
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
-     
+    data_map <- aggregate(v_data_pd[, 4], by=list(v_data_pd$country_name, v_data_pd$latitude, v_data_pd$longitude), mean, 0)
+    colnames(data_map) <- c("country_name", "latitude", "longitude", "gdp_usd")
+    
     caz <- data_map$gdp_usd / 40
     qpal <- colorQuantile("YlOrRd", data_map$gdp_usd, n = 4)
     
@@ -700,6 +704,7 @@ function(input, output, session) {
                  color = ~qpal(gdp_usd), fillOpacity = 1) %>%
       addLegend("bottomright", pal = qpal, values = ~gdp_usd, 
                 title = "GDP - Mean", opacity = 1)
+    
   })    
   
     
