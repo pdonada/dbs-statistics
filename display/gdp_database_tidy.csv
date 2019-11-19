@@ -389,16 +389,6 @@ Chad,TCD,2015,10946,12.1131,15.0491
 Chad,TCD,2016,10091,12.1131,15.0491
 Chad,TCD,2017,9976,12.1131,15.0491
 Chad,TCD,2018,11303,12.1131,15.0491
-Channel Islands,CHI,2009,NA,#N/A,#N/A
-Channel Islands,CHI,2010,NA,#N/A,#N/A
-Channel Islands,CHI,2011,NA,#N/A,#N/A
-Channel Islands,CHI,2012,NA,#N/A,#N/A
-Channel Islands,CHI,2013,NA,#N/A,#N/A
-Channel Islands,CHI,2014,NA,#N/A,#N/A
-Channel Islands,CHI,2015,NA,#N/A,#N/A
-Channel Islands,CHI,2016,NA,#N/A,#N/A
-Channel Islands,CHI,2017,NA,#N/A,#N/A
-Channel Islands,CHI,2018,NA,#N/A,#N/A
 Chile,CHL,2009,172389,-33.45,-70.667
 Chile,CHL,2010,218538,-33.45,-70.667
 Chile,CHL,2011,252252,-33.45,-70.667
@@ -469,16 +459,6 @@ Costa Rica,CRI,2015,54776,9.935,-84.0841
 Costa Rica,CRI,2016,57158,9.935,-84.0841
 Costa Rica,CRI,2017,58175,9.935,-84.0841
 Costa Rica,CRI,2018,60126,9.935,-84.0841
-Cote d'Ivoire,CIV,2009,24277,#N/A,#N/A
-Cote d'Ivoire,CIV,2010,24885,#N/A,#N/A
-Cote d'Ivoire,CIV,2011,25382,#N/A,#N/A
-Cote d'Ivoire,CIV,2012,26791,#N/A,#N/A
-Cote d'Ivoire,CIV,2013,31264,#N/A,#N/A
-Cote d'Ivoire,CIV,2014,35316,#N/A,#N/A
-Cote d'Ivoire,CIV,2015,33131,#N/A,#N/A
-Cote d'Ivoire,CIV,2016,35297,#N/A,#N/A
-Cote d'Ivoire,CIV,2017,38054,#N/A,#N/A
-Cote d'Ivoire,CIV,2018,43007,#N/A,#N/A
 Croatia,HRV,2009,62779,45.8,16
 Croatia,HRV,2010,59866,45.8,16
 Croatia,HRV,2011,62399,45.8,16
@@ -629,16 +609,6 @@ Estonia,EST,2015,22904,59.4339,24.728
 Estonia,EST,2016,23984,59.4339,24.728
 Estonia,EST,2017,26612,59.4339,24.728
 Estonia,EST,2018,30285,59.4339,24.728
-Eswatini,SWZ,2009,3580,#N/A,#N/A
-Eswatini,SWZ,2010,4439,#N/A,#N/A
-Eswatini,SWZ,2011,4820,#N/A,#N/A
-Eswatini,SWZ,2012,4824,#N/A,#N/A
-Eswatini,SWZ,2013,4561,#N/A,#N/A
-Eswatini,SWZ,2014,4377,#N/A,#N/A
-Eswatini,SWZ,2015,4020,#N/A,#N/A
-Eswatini,SWZ,2016,3817,#N/A,#N/A
-Eswatini,SWZ,2017,4434,#N/A,#N/A
-Eswatini,SWZ,2018,4704,#N/A,#N/A
 Ethiopia,ETH,2009,32437,9.0333,38.7
 Ethiopia,ETH,2010,29934,9.0333,38.7
 Ethiopia,ETH,2011,31953,9.0333,38.7
@@ -1029,26 +999,6 @@ Kiribati,KIR,2015,171,1.3382,173.0176
 Kiribati,KIR,2016,178,1.3382,173.0176
 Kiribati,KIR,2017,186,1.3382,173.0176
 Kiribati,KIR,2018,188,1.3382,173.0176
-"Korea, Dem. People’s Rep.",PRK,2009,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2010,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2011,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2012,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2013,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2014,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2015,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2016,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2017,NA,#N/A,#N/A
-"Korea, Dem. People’s Rep.",PRK,2018,NA,#N/A,#N/A
-"Korea, Rep.",KOR,2009,901935,#N/A,#N/A
-"Korea, Rep.",KOR,2010,1094499,#N/A,#N/A
-"Korea, Rep.",KOR,2011,1202464,#N/A,#N/A
-"Korea, Rep.",KOR,2012,1222807,#N/A,#N/A
-"Korea, Rep.",KOR,2013,1305605,#N/A,#N/A
-"Korea, Rep.",KOR,2014,1411334,#N/A,#N/A
-"Korea, Rep.",KOR,2015,1382764,#N/A,#N/A
-"Korea, Rep.",KOR,2016,1414804,#N/A,#N/A
-"Korea, Rep.",KOR,2017,1530751,#N/A,#N/A
-"Korea, Rep.",KOR,2018,1619424,#N/A,#N/A
 Kosovo,XKX,2009,5654,42.6666,21.1724
 Kosovo,XKX,2010,5830,42.6666,21.1724
 Kosovo,XKX,2011,6692,42.6666,21.1724
@@ -1369,16 +1319,6 @@ Namibia,NAM,2015,11651,-22.57,17.0835
 Namibia,NAM,2016,11286,-22.57,17.0835
 Namibia,NAM,2017,13566,-22.57,17.0835
 Namibia,NAM,2018,14522,-22.57,17.0835
-Nauru,NRU,2009,44,#N/A,#N/A
-Nauru,NRU,2010,49,#N/A,#N/A
-Nauru,NRU,2011,73,#N/A,#N/A
-Nauru,NRU,2012,104,#N/A,#N/A
-Nauru,NRU,2013,109,#N/A,#N/A
-Nauru,NRU,2014,117,#N/A,#N/A
-Nauru,NRU,2015,100,#N/A,#N/A
-Nauru,NRU,2016,102,#N/A,#N/A
-Nauru,NRU,2017,114,#N/A,#N/A
-Nauru,NRU,2018,115,#N/A,#N/A
 Nepal,NPL,2009,12855,27.7167,85.3166
 Nepal,NPL,2010,16003,27.7167,85.3166
 Nepal,NPL,2011,18914,27.7167,85.3166
@@ -2119,16 +2059,6 @@ Vietnam,VNM,2015,193241,21.0333,105.85
 Vietnam,VNM,2016,205276,21.0333,105.85
 Vietnam,VNM,2017,223780,21.0333,105.85
 Vietnam,VNM,2018,244948,21.0333,105.85
-Virgin Islands (U.S.),VIR,2009,4203,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2010,4339,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2011,4239,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2012,4095,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2013,3762,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2014,3622,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2015,3748,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2016,3863,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2017,3855,#N/A,#N/A
-Virgin Islands (U.S.),VIR,2018,NA,#N/A,#N/A
 West Bank and Gaza,PSE,2009,7268,31.7764,35.2269
 West Bank and Gaza,PSE,2010,8913,31.7764,35.2269
 West Bank and Gaza,PSE,2011,10465,31.7764,35.2269

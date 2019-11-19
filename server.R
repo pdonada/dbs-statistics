@@ -715,9 +715,46 @@ function(input, output, session) {
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
-
+    
+    lbls <- factor(v_countryorder_pd[ ,1])
+    slices <- v_countryorder_pd$x
+    slicestril <- prettyNum(c(round(v_countryorder_pd$x/1000)), big.mark = ",", decimal.mark = ".")
+    lbls <- paste(lbls, slicestril) 
+    #lbls <- paste(lbls,"T",sep="") # ad % to labels
+    
+    pie(slices,labels = lbls, col=rainbow(length(lbls)), main="Top 10 GDP Countries in Trillions of U$", radius = 1.1)
 })
   
+  ##TAB: Graphs
+  output$view8_pd <- renderPlot({
+    inFile_pd <- input$file1
+    
+    if (is.null(inFile_pd))
+      return(NULL)
+    
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    v_data_pd <- na.omit(file_read_pd)
+    
+    #grouping by country/mean
+    v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
+    v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
+    v_countryorder_pd <- v_countryorder_pd[1:10,]
+    
+    lbls <- factor(v_countryorder_pd[ ,1])
+    slices <- round(v_countryorder_pd$x/1000)
+    slicestril <- prettyNum(c(round(slices)), big.mark = ",", decimal.mark = ".")
+    #lbls <- paste(lbls, slicestril) 
+    #lbls <- paste(lbls,"T",sep="") # ad % to labels
+    
+    par(las=2) # make label text perpendicular to axis
+    par(mar=c(5,9,4,2)) # increase y-axis margin.
+    barplot(slices, names.arg = lbls, col=rainbow(length(lbls)), horiz=TRUE, 
+            legend=slicestril, args.legend = list(x = "topright"))
+    
+  
+    })    
+    
   #Creating choices for Country and Year
   observe({ 
     inFile_pd <- input$file1

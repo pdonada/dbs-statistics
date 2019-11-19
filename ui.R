@@ -203,9 +203,13 @@ fluidPage(theme = shinytheme("lumen"),
 									           h5("Table generated considering arguments selected"),
 											   DT::dataTableOutput("view6_pd")),
 											   
-									  tabPanel("Boxplot", 
-											  h5("Boxplot of TOP 10 GDP"),
-											  plotOutput("view7_pd"))	                                    
+									  tabPanel("Pie Chart", 
+											  h5("TOP 10 countries by GDPin Trillions of U$"),
+											  plotOutput("view7_pd")),
+									  
+									  tabPanel("Graphs", 
+									           h5("TOP 10 countries by GDPin Trillions of U$"),
+									           plotOutput("view8_pd"))
                                    
                                  )
                       
