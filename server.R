@@ -213,34 +213,8 @@ function(input, output, session) {
     print(paste( 'observe - list of countries', input$bgender_series)) 
     
     dfgender <- data.frame(bdbgender())
-    
-    switch(input$bgender_series,  
-           
-           access = { 
-             # list of unique countries in the dataset
-             bdbgender_country <- dfgender$country %>% unique()
-           }, 
-           
-           progression =  { 
-             # list of unique countries in the dataset
-             bdbgender_country <- dfgender$country %>% unique()
-           },  
-           
-           cause =   { 
-             # list of unique countries in the dataset
-             bdbgender_country <- dfgender$country %>% unique()
-           },
-           
-           malnutrition =   { 
-             # list of unique countries in the dataset
-             bdbgender_country <- dfgender$country %>% unique()
-           },
-           
-           sanitation =   { 
-             # list of unique countries in the dataset
-             bdbgender_country <- dfgender$country %>% unique()
-           }
-    )
+    # list of unique countries in the dataset
+    bdbgender_country <- dfgender$country %>% unique()
     
     updateSelectInput(session, "bgender_country"
                       , choices = bdbgender_country )
@@ -258,39 +232,8 @@ function(input, output, session) {
     print(paste('observe - list of years', input$bgender_series , 'country', input$bgender_country))  
     
     dfgender <- data.frame(bdbgender())
-    
-    switch(input$bgender_series,  
-           
-           access = {
-             print('*** access')
-             # list of unique year in the dataset
-             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
-           }, 
-           
-           progression =  { 
-             print('*** progression')
-             # list of unique year in the dataset
-             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
-           },  
-           
-           cause =   { 
-             print('*** cause')
-             # list of unique year in the dataset
-             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
-           },
-           
-           malnutrition =   { 
-             print('*** malnutrition')
-             # list of unique year in the dataset
-             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
-           },
-           
-           sanitation =   { 
-             print('*** sanitation')
-             # list of unique year in the dataset
-             bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
-           }
-    )    
+    # list of unique year in the dataset
+    bdbgender_year <- dfgender[ dfgender$country == input$bgender_country, ]$year %>% unique()
     
     updateSelectInput(session, "bgender_year"
                       , choices = bdbgender_year )
