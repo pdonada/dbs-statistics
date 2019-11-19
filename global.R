@@ -22,7 +22,6 @@ library(WDI)
 library(DT)
 library(leaflet)
 
-
 ###############################################
 #      list of countries available            #
 countries <- c( 
@@ -166,7 +165,6 @@ countries <- c(
 ##    set models that are available         ##
 ##    by type of distribuiton               ##
 selectDiscreteDist <- c('Binomial' = 'binomial'
-                    #    ,'Poisson' = 'poisson'
                         )
 
 selectContinuousDist <- c('Normal' = 'normal'
@@ -183,14 +181,14 @@ selectContinuousDist <- c('Normal' = 'normal'
 # list of series available
 bdbgender_series <- c('Access to anti-retroviral drugs' = 'access'
                     , 'Progression to secondary school' = 'progression'
-                    , 'Cause of death by injury - ages 15-34' = 'cause')
+                    , 'Cause of death by injury (ages 15-34)' = 'cause')
                     
                     
 ###############################################
 # dataset 2: Population Statistics           ##
 
 # list of series available
-bdbpopulation_series <- c('Malnutrition prevalence, height for age (% of children under 5)' ='malnutrition'
+bdbpopulation_series <- c('Immunization - measles (children ages 12-23 months)' = 'measles'
                          ,'People using safely managed sanitation services' = 'sanitation')
 
 
@@ -241,16 +239,6 @@ probability_validation <- function(value, parameter, model) {
         paste('*** Invalid', parameter,'value (min = 0) ***') 
       }
     }
-    
-  }else if ( model == 'poisson' || model == 'geometric') {
-    if ( !( is.numeric(value) & !is.na(value) ) ){
-      paste('*** Invalid', parameter,'value (Not numeric) ***') 
-      
-    }else{
-      if ( value <0 ){ 
-        paste('*** Invalid',parameter,'value (min = 0) ***') 
-      }
-    }    
     
   }else if ( model == 'normal' ){
     if ( !( is.numeric(value) & !is.na(value) ) ){

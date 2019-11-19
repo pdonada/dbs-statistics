@@ -51,23 +51,23 @@ function(input, output, session) {
                indicatorMA = 'SH.DTH.INJR.1534.MA.ZS'  # Cause of death by injury - ages 15-34 - Female 
              },
              
-             malnutrition =   { 
+             measles =   { 
                
                # Increment the progress bar, and update the detail text.
                incProgress(1/2)
                
-               indicatorMAN = 'SN.SH.STA.STNT.ZS'  # Sub-National Malnutrition prevalence, height for age (% of children under 5)
-               print(paste('indicator MAN',indicatorMAN,'syear', startYear, 'eyear'=endYear))     
+               indicatorMEAS = 'SH.IMM.MEAS'  # Immunization, measles (% of children ages 12-23 months)
+               print(paste('indicator MEAS',indicatorMEAS,'syear', startYear, 'eyear'=endYear))     
                
                # Increment the progress bar, and update the detail text.
-               incProgress(2/2)
+               incProgress(1/2)
                
-               bdataset_populationMAN =  WDI(indicator = indicatorMAN, country = countries , start = startYear, end = endYear)
-               bdataset_populationMAN <- bdataset_populationMAN %>% na.omit()  # ignore lines with missing information
-               print(paste('nro col MAN', nrow(bdataset_populationMAN) ))  
+               bdataset_populationMEAS =  WDI(indicator = indicatorMEAS, country = countries , start = startYear, end = endYear)
+               bdataset_populationMEAS <- bdataset_populationMEAS %>% na.omit()  # ignore lines with missing information
+               print(paste('nro col MEAS', nrow(bdataset_populationMEAS) ))  
                
                print( 'end reactive (population 1)')
-               return(bdataset_populationMAN)
+               return(bdataset_populationMEAS)
              },
              
              sanitation =   { 
@@ -274,10 +274,10 @@ function(input, output, session) {
         
         switch(input$bgender_series,  
                
-               malnutrition = { 
-                 dfgender <- data.frame(bdbgender()) #%>% 
-                #   select(country, year, SN.SH.STA.STNT.ZS) %>%   
-               #    rename( c("country" = "Country", "year" = "Year","SN.SH.STA.STNT.ZS" = "(% of children under 5)") )                 
+               measles = { 
+                 dfgender <- data.frame(bdbgender()) %>% 
+                   select(country, year, SH.IMM.MEAS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SH.IMM.MEAS" = "(% of children ages 12-23 months)") )                 
                  
                },
                
@@ -328,10 +328,10 @@ function(input, output, session) {
                    rename( c("country" = "Country", "year" = "Year","SH.DTH.INJR.1534.MA.ZS" = "Male(%)", "SH.DTH.INJR.1534.FE.ZS" = "Female(%)") )               
                },
                
-               malnutrition =   { 
+               measles =   { 
                  df %>% 
-                   select(country, year, SN.SH.STA.STNT.ZS) %>%   
-                   rename( c("country" = "Country", "year" = "Year","SN.SH.STA.STNT.ZS)" = "(% of children under 5)" ) )               
+                   select(country, year, SH.IMM.MEAS) %>%   
+                   rename( c("country" = "Country", "year" = "Year", "SH.IMM.MEAS" = "(% of children ages 12-23 months)" ) )               
                },
                
                sanitation =   { 
@@ -368,6 +368,8 @@ function(input, output, session) {
       if (input$bdataset == 'gender'){ 
         
         par(mfrow=c(2,2)) 
+        probf <- NULL
+        probm <- NULL
         
         switch(input$bgender_series,  
                
@@ -408,15 +410,15 @@ function(input, output, session) {
       }else if(input$bdataset == 'population'){
         switch(input$bgender_series,  
                
-               malnutrition = { 
+               measles = { 
                  
                  par(mfrow=c(1,2)) 
-                 
-                 probMan <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SN.SH.STA.STNT.Z
-                 print(paste('Calculating MALNUTRITION probability',probMan))  
-                 if ( !is.null(probMan) ){ 
-                   probMan <- as.numeric(probMan / 100)
-                   binomial_plot (input$s,input$n,probMan,'')
+                 # Immunization, measles (% of children ages 12-23 months)
+                 probMeas <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.IMM.MEAS
+                 print(paste('Calculating MEASLES probability',probMeas))  
+                 if ( !is.null(probMeas) ){ 
+                   probMeas <- as.numeric(probMeas) / 100
+                   binomial_plot (input$s,input$n,probMeas,'')
                  }
                  
                },
@@ -425,9 +427,9 @@ function(input, output, session) {
                  
                  par(mfrow=c(2,2)) 
                  
-                 #### People using safely managed sanitation services, urban (% of urban population)
+                 # People using safely managed sanitation services, urban (% of urban population)
                  probUR <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.STA.SMSS.UR.ZS
-                 #### People using safely managed sanitation services, rural (% of rural population)
+                 # People using safely managed sanitation services, rural (% of rural population)
                  probRU <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.STA.SMSS.RU.ZS
                  
    
@@ -453,68 +455,7 @@ function(input, output, session) {
       print('end PLOT')   
     } 
     
-    # poisson - discrete model
-    if (input$dismodel == 'poisson') { 
-      
-      validate(
-        probability_validation(input$lam, 'lambda', input$dismodel),
-        probability_validation(input$lam2, 'lambda 2', input$dismodel),
-        probability_validation(input$lam3, 'lambda 3', input$dismodel),
-        probability_validation(input$max, 'x', input$dismodel)
-        
-      )      
-      
-      par(mfrow=c(1,2))   
-      # simulation (model the number of expected events concurring within a specific time window)
-      D = rpois(input$s    # Number of observations you want to see
-                , input$lam  # Estimated rate of events for the distribution; this is expressed as average events per period
-      )    
-      tab = table(D)  
-      barplot(tab, col = 'blue', main="Distribution", xlab="Events" , ylab= "Count")  
-      
-      x1 = 0:input$max  
-      y1 = dpois(x1,input$lam)          # pmf
-      plot(x1, y1, type='b', main = "Probability mass function" , ylab = "Probability" , xlab = "Events", col="blue")  
-      
-      # example https://towardsdatascience.com/the-poisson-distribution-and-poisson-process-explained-4e2cb17d459
-      
-      if (input$lam2 > 0 ){
-        # Add second curve to the same plot by calling points() and lines()
-        # Use symbol '*' for points.
-        y2 = dpois(x1,input$lam2)          # pmf
-        points(x1, y2, col="red", pch="*")
-        lines (x1, y2, col="red", lty=2)
-      }
-      
-      if (input$lam3 > 0 ){
-        # Add Third curve to the same plot by calling points() and lines()
-        # Use symbol '+' for points.
-        y3 = dpois(x1,input$lam3)          # pmf
-        points(x1, y3, col="green",pch="+")
-        lines (x1, y3, col="green", lty=3)
-      }
-      
-    } 
-    
-    # geometric - discrete model
-    if (input$dismodel == 'geometric') { 
-      
-      validate(
-        probability_validation(input$probg, 'p', input$dismodel),
-        probability_validation(input$max, 'x', input$dismodel)
-      )        
-      
-      
-      par(mfrow=c(1,2)) 
-      D=rgeom(input$s, input$probg)   # simulation
-      tab=table(D)  
-      barplot(tab, col='blue', main="Distribution", xlab="Events" , ylab= "Count")
-      
-      x2=0:input$max  
-      y2=dgeom(x2,input$probg)      # pmf
-      plot(x2, y2, type='b', main = "Probability mass function" , ylab = "Probability" , xlab = "Number of trials", col="blue" )  
-    }
-    
+
     # normal  - continuous model
     if (input$dismodel == 'normal') { 
       
@@ -620,9 +561,13 @@ function(input, output, session) {
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
     
-    v_countrym_pd  %>% 
-      rename ( c("Group.1" = "Country"
-                 ,"x" = "Mean"))
+    v_countrym_pd <- v_countrym_pd  %>% 
+                      rename ( c("Group.1" = "Country"
+                                 ,"x" = "Mean")) 
+    
+    DT::datatable(v_countrym_pd)  %>% 
+      formatCurrency(c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
+        
   })
   
   #TAB: Top 10

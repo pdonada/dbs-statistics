@@ -11,6 +11,74 @@ fluidPage(theme = shinytheme("lumen"),
           navbarPage( "MODELS:", id = "tabs",
                       
                       ####################################################################################################
+                      ##                                  DESCRIPTIVE ANALYSIS                                          ##
+                      ####################################################################################################
+                      tabPanel("Describing Data",
+                               sidebarPanel(
+                                 fileInput("file1", "Choose file to upload (csv)", accept = ".csv"),
+                                 checkboxInput('header', 'Header', TRUE),
+                                 radioButtons("sep", "Separator", choices = c(Comma = ",", Semicolon = ";"), selected = ","),
+                                 radioButtons('quote', 'Quote', c(None='', 'Double Quote'='"', 'Single Quote'="'"), '"'),
+                                 tags$hr(),
+                                 selectInput("gdp_country_pd", "Select a country", 
+                                             choices = ""
+                                 ),  
+                                 selectInput("gdp_year_pd", "Select a year",
+                                             choices = ""
+                                 )
+                               ),  # sidebarPanel
+                               
+                               mainPanel(
+                                 tabsetPanel(
+                                   tabPanel("Data Table",
+                                            h4("Please, select country and year to filter"),
+                                            h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640 | ! Please, upload file: gdp_database_tidy.csv"),
+                                            DT::dataTableOutput("view6_pd")),
+                                   
+                                   #tabPanel("Data Table",
+                                   #	   h5("Extructured table from your file (Millions U$)"),
+                                   #	   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
+                                   #	   DT::dataTableOutput("view1_pd")
+                                   #),
+                                   
+                                   tabPanel("Summary",
+                                            # Output: Header + summary of distribution ----
+                                            h5("Summary"),
+                                            verbatimTextOutput("view2_pd"),
+                                            
+                                            # Output: Header + table of distribution ----
+                                            h5("Observations"),
+                                            tableOutput("view3_pd")
+                                   ),
+                                   
+                                   tabPanel("Mean by Country", 
+                                            h5("Mean of GDP grouped by country"),
+                                            DT::dataTableOutput("view4_pd")),
+                                   
+                                   tabPanel("Top 10", 
+                                            h5("Mean of GDP grouped by country showing TOP 10 GDP"),
+                                            DT::dataTableOutput("view5_pd")),
+                                   
+                                   tabPanel("Pie Chart", 
+                                            h5("TOP 10 countries by GDPin Trillions of U$"),
+                                            plotOutput("view7_pd")),
+                                   
+                                   tabPanel("Graphs", 
+                                            h5("TOP 10 countries by GDPin Trillions of U$"),
+                                            plotOutput("view8_pd")),
+                                   
+                                   tabPanel("Heat Map", 
+                                            h5("GDP-Mean by country representativity"),
+                                            leafletOutput(outputId = "view9_pd"))
+                                   
+                                 )
+                                 
+                               ) # mainPanel
+                               
+                      ),  # tabPanel Describing Data
+                      
+                      
+                      ####################################################################################################
                       ##                                      PROBABILITY MODELS                                        ##
                       ####################################################################################################
                       tabPanel("Probability", "",
@@ -62,32 +130,7 @@ fluidPage(theme = shinytheme("lumen"),
                                    numericInput("n", "Number of trials (n)" , value = 10, min = 0)
                                  ), 
                                  
-                                 ###############################################
-                                 ##           poisson distribution            ##
-                                 conditionalPanel(     
-                                   condition = "input.dismodel == 'poisson'", 
-                                   numericInput("lam", "Estimated rate of events (lambda)" 
-                                                , value = 1
-                                                , min = 0 ),
-                                   
-                                   h5("Inform other lambda values for comparison"),
-                                   numericInput("lam2", "Estimated rate of events (lambda 2)" 
-                                                , value = 0 , min = 0 ),
-                                   numericInput("lam3", "Estimated rate of events (lambda 3)" 
-                                                , value = 0 , min = 0 )
-                                 ), 
-                                 
-                                 conditionalPanel(     
-                                   condition = "input.dismodel == 'geometric'", 
-                                   numericInput("probg", "Probability of sucess (p)" 
-                                                , value = 0.5  # initial value
-                                                , min = 0      # Minimum allowed value
-                                                , max = 1      # Maximum allowed value
-                                                , step = 0.1   # Interval to use when stepping between min and max
-                                   ) 
-                                   
-                                 ), 
-                                 
+
                                  conditionalPanel(     
                                    condition = "input.dismodel == 'normal'", 
                                    numericInput("mu", "Mean (mu)" , value = 0), 
@@ -128,11 +171,11 @@ fluidPage(theme = shinytheme("lumen"),
                                                       )
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'cause'",
-                                                        h5('Lets check the probability that the cause of death is injury by gender.')
+                                                        h5('Lets check the probability that the cause of death is injury by gender (ages 15-34).')
                                                       )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'malnutrition'",
-                                                        h5('Lets check the probability of malnutrition prevalence, height for age (% of children under 5).')
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'measles'",
+                                                        h5('Lets check the probability of children aged 12-23 months being immunized to measles.')
                                                       )
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'sanitation'",
@@ -154,74 +197,7 @@ fluidPage(theme = shinytheme("lumen"),
                                
                       ), # tabPanel probability
                       
-                      
-                      ####################################################################################################
-                      ##                                  DESCRIPTIVE ANALYSIS                                          ##
-                      ####################################################################################################
-                      tabPanel("Describing Data",
-                               sidebarPanel(
-                                 fileInput("file1", "Choose file to upload (csv)", accept = ".csv"),
-                                 checkboxInput('header', 'Header', TRUE),
-                                 radioButtons("sep", "Separator", choices = c(Comma = ",", Semicolon = ";"), selected = ","),
-                                 radioButtons('quote', 'Quote', c(None='', 'Double Quote'='"', 'Single Quote'="'"), '"'),
-                                 tags$hr(),
-                                 selectInput("gdp_country_pd", "Select a country", 
-                                             choices = ""
-                                             ),  
-                                 selectInput("gdp_year_pd", "Select a year",
-                                             choices = ""
-                                             )
-                               ),  # sidebarPanel
-                               
-                               mainPanel(
-									tabsetPanel(
-									  tabPanel("Data Table",
-									           h4("Please, select country and year to filter"),
-									           h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640 | ! Please, upload file: gdp_database_tidy.csv"),
-									           DT::dataTableOutput("view6_pd")),
-									  
-									  #tabPanel("Data Table",
-										#	   h5("Extructured table from your file (Millions U$)"),
-										#	   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
-										#	   DT::dataTableOutput("view1_pd")
-									  #),
-									  
-									  tabPanel("Summary",
-											   # Output: Header + summary of distribution ----
-											   h4("Summary"),
-											   verbatimTextOutput("view2_pd"),
-											   
-											   # Output: Header + table of distribution ----
-											   h4("Observations"),
-											   tableOutput("view3_pd")
-									  ),
-									  
-									  tabPanel("Mean by Country", 
-											   h4("Mean of GDP grouped by country"),
-											   DT::dataTableOutput("view4_pd")),
-									  
-									  tabPanel("Top 10", 
-											   h5("Mean of GDP grouped by country showing TOP 10 GDP"),
-											   DT::dataTableOutput("view5_pd")),
 
-									  tabPanel("Pie Chart", 
-											  h5("TOP 10 countries by GDPin Trillions of U$"),
-											  plotOutput("view7_pd")),
-									  
-									  tabPanel("Graphs", 
-									           h5("TOP 10 countries by GDPin Trillions of U$"),
-									           plotOutput("view8_pd")),
-									  
-									  tabPanel("Heat Map", 
-									           h5("GDP-Mean by country representativity"),
-									           leafletOutput(outputId = "view9_pd"))
-                                   
-                                 )
-                      
-                               ) # mainPanel
-                               
-                      ),  # tabPanel Describing Data
-                      
 
                       ####################################################################################################
                       ##                                  HYPOTHESIS TESTING                                            ##
