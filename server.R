@@ -561,9 +561,13 @@ function(input, output, session) {
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
     
-    v_countrym_pd  %>% 
-      rename ( c("Group.1" = "Country"
-                 ,"x" = "Mean"))
+    v_countrym_pd <- v_countrym_pd  %>% 
+                      rename ( c("Group.1" = "Country"
+                                 ,"x" = "Mean")) 
+    
+    DT::datatable(v_countrym_pd)  %>% 
+      formatCurrency(c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
+        
   })
   
   #TAB: Top 10

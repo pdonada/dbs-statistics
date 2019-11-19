@@ -22,7 +22,6 @@ library(WDI)
 library(DT)
 library(leaflet)
 
-
 ###############################################
 #      list of countries available            #
 countries <- c( 
