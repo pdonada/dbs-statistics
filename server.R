@@ -27,7 +27,7 @@ function(input, output, session) {
              access = { 
                
                # Increment the progress bar, and update the detail text.
-               incProgress(1/3)
+               incProgress(1/4)
                
                indicatorFE = 'SH.HIV.ARTC.FE.ZS'  # Access to anti-retroviral drugs - Male 
                indicatorMA = 'SH.HIV.ARTC.MA.ZS'  # Access to anti-retroviral drugs - Female 
@@ -36,7 +36,7 @@ function(input, output, session) {
              progression =  { 
                
                # Increment the progress bar, and update the detail text.
-               incProgress(1/3)
+               incProgress(1/4)
                
                indicatorFE = 'SE.SEC.PROG.FE.ZS'  # Progression to secondary school - Male 
                indicatorMA = 'SE.SEC.PROG.MA.ZS'  # Progression to secondary school - Female 
@@ -45,7 +45,7 @@ function(input, output, session) {
              cause =   { 
                
                # Increment the progress bar, and update the detail text.
-               incProgress(1/3)
+               incProgress(1/4)
                
                indicatorFE = 'SH.DTH.INJR.1534.FE.ZS'  # Cause of death by injury - ages 15-34 - Male 
                indicatorMA = 'SH.DTH.INJR.1534.MA.ZS'  # Cause of death by injury - ages 15-34 - Female 
@@ -64,15 +64,16 @@ function(input, output, session) {
                
                bdataset_populationMAN =  WDI(indicator = indicatorMAN, country = countries , start = startYear, end = endYear)
                bdataset_populationMAN <- bdataset_populationMAN %>% na.omit()  # ignore lines with missing information
-               print(paste('nro col M', nrow(bdataset_populationMAN) ))  
+               print(paste('nro col MAN', nrow(bdataset_populationMAN) ))  
                
                print( 'end reactive (population 1)')
+               return(bdataset_populationMAN)
              },
              
              sanitation =   { 
                
                # Increment the progress bar, and update the detail text.
-               incProgress(1/3)
+               incProgress(1/5)
                
                indicatorUR = 'SH.STA.SMSS.UR.ZS'  # People using safely managed sanitation services, urban (% of urban population)
                indicatorRU = 'SH.STA.SMSS.RU.ZS'  # People using safely managed sanitation services, rural (% of rural population)
@@ -80,32 +81,64 @@ function(input, output, session) {
                print(paste('indicator UR',indicatorUR,'syear', startYear, 'eyear'=endYear))     
                
                # Increment the progress bar, and update the detail text.
-               incProgress(2/3)
+               incProgress(1/5)
                
                bdataset_populationUR =  WDI(indicator = indicatorUR, country = countries , start = startYear, end = endYear)
                bdataset_populationUR <- bdataset_populationUR %>% na.omit()  # ignore lines with missing information
-               print(paste('nro col M', nrow(bdataset_populationUR) ))   
+               bdataset_populationUR <- bdataset_populationUR %>% 
+                 select(iso2c, country, year, SH.STA.SMSS.UR.ZS)
+               print(paste('nro col UR', nrow(bdataset_populationUR) ))   
                
                print(paste('indicator RU',indicatorRU,'syear', startYear, 'eyear'=endYear)) 
                
                # Increment the progress bar, and update the detail text.
-               incProgress(3/3)
+               incProgress(1/5)
                
                bdataset_populationRU =  WDI(indicator = indicatorRU, country = countries , start = startYear, end = endYear)
                bdataset_populationRU <- bdataset_populationRU %>%  na.omit()  # ignore lines with missing information
-               print(paste('nro col F', nrow(bdataset_populationRU))) 
+               bdataset_populationRU <- bdataset_populationRU %>% 
+                 select(iso2c, country, year, SH.STA.SMSS.RU.ZS)
+               print(paste('nro col RU', nrow(bdataset_populationRU))) 
                
-               print( paste('end reactive (population 2)', nrow( data.frame(bdataset_populationUR, bdataset_populationRU) )))
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/5)
+               
                # group both datasets
-               data.frame(bdataset_populationUR, bdataset_populationRU)               
+               bdataset <- NULL
+               for (row in 1:nrow(bdataset_populationRU)) {
+                 flag <- FALSE
+                 row_ur <- 1
+                 while (!flag & row_ur <= nrow(bdataset_populationUR) ) {
+                   if (bdataset_populationUR[row_ur, "iso2c"] == bdataset_populationRU[row, "iso2c"] &
+                       bdataset_populationUR[row_ur, "year"] == bdataset_populationRU[row, "year"] ) {
+                     flag <- TRUE
+                     
+                   }else { row_ur <- row_ur + 1 }
+                 }
+                 # if found the country on the Urban database add to the list
+                 if (flag) {
+                   bdataset <- rbind(bdataset,
+                                     c("iso2c" = bdataset_populationRU[row, "iso2c"]
+                                       ,"country" = bdataset_populationRU[row, "country"]
+                                       ,"year" = bdataset_populationRU[row, "year"]
+                                       ,"SH.STA.SMSS.UR.ZS" = bdataset_populationUR[row_ur, "SH.STA.SMSS.UR.ZS"]
+                                       ,"SH.STA.SMSS.RU.ZS" = bdataset_populationRU[row, "SH.STA.SMSS.RU.ZS"] ))
+                   
+                 }
+               } # loop
                
-             }
-      )
+               # Increment the progress bar, and update the detail text.
+               incProgress(1/5)
+               
+               print( paste('end reactive (population 2)', nrow(bdataset) ))
+               return (bdataset)  # return the grouped dataset
+             }  # sanitation services
+      )  # switch
       
       if ( input$bdataset == 'gender' ){
              
           # Increment the progress bar, and update the detail text.
-          incProgress(2/3)
+          incProgress(1/4)
         
           print(paste('indicator MA',indicatorMA,'syear', startYear, 'eyear'=endYear))     
                   
@@ -114,16 +147,18 @@ function(input, output, session) {
           print(paste('nro col M', nrow(bdataset_genderM) ))   
                   
           # Increment the progress bar, and update the detail text.
-          incProgress(3/3)
+          incProgress(1/4)
           
           print(paste('indicator FE',indicatorFE,'syear', startYear, 'eyear'=endYear)) 
           bdataset_genderF =  WDI(indicator = indicatorFE, country = countries , start = startYear, end = endYear)
           bdataset_genderF <- bdataset_genderF %>%  na.omit()  # ignore lines with missing information
           print(paste('nro col F', nrow(bdataset_genderF))) 
-                  
+            
+          # Increment the progress bar, and update the detail text.
+          incProgress(1/4)      
           print( paste('end reactive (gender)', nrow( data.frame(bdataset_genderM, bdataset_genderF) )))
           # group both datasets
-          data.frame(bdataset_genderM, bdataset_genderF)
+          return (data.frame(bdataset_genderM, bdataset_genderF))
       }
       
     })
@@ -318,19 +353,18 @@ function(input, output, session) {
   
   # table tab
   output$tabProbBy <- DT::renderDataTable( {
-    print('Generating table by')
+    print( paste('Generating table by',input$bgender_country, input$bgender_year))
     
     if (input$dismodel == 'binomial') { 
-      if (input$bdataset == 'gender'){
+  #    if (input$bdataset == 'gender'){
         
         if (input$bgender_country == "" || input$bgender_year == "") {
           return (NULL)
         } 
         
-        print(paste('Country',input$bgender_country,'Year',input$bgender_year))
         df <- data.frame(bdbgender())
         df <- df[ df$country == input$bgender_country & df$year == input$bgender_year, ]
-       
+     
         switch(input$bgender_series,  
                
                access = { 
@@ -364,7 +398,7 @@ function(input, output, session) {
                }
         )
         
-      }
+  #    }
       
     }else { "Not available"}
     
@@ -372,9 +406,9 @@ function(input, output, session) {
 
   # plot tab
   output$plotProb <- renderPlot({ 
-    print(paste('Starting PLOT -',input$bgender_series))  
+    print(paste('Starting PLOT -',input$bgender_series, input$bdataset,input$bgender_country, input$bgender_year))  
     
-    if (input$bgender_series == ''){
+    if (input$bgender_series == '' || input$bgender_country =='' || input$bgender_year == ''){
       print('end PLOT')
       return(NULL)
     }
@@ -387,7 +421,7 @@ function(input, output, session) {
       )
       
       dfgender <- data.frame(bdbgender())
-      
+
       if (input$bdataset == 'gender'){ 
         
         par(mfrow=c(2,2)) 
@@ -415,13 +449,13 @@ function(input, output, session) {
                  probm <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.DTH.INJR.1534.MA.ZS
                }
         )
-        print('Calculating FEMALE probability')            
+        print( paste('Calculating FEMALE probability',probf))            
         #### female
         if ( !is.null(probf) ){ 
           probf <- as.numeric(probf / 100)
           binomial_plot (input$s,input$n,probf,'Female')
         }
-        print('Calculating MALE probability')            
+        print(paste('Calculating MALE probability',probm))            
         #### male
         if ( !is.null(probm) ){ 
           probm <- as.numeric(probm / 100)
@@ -436,7 +470,7 @@ function(input, output, session) {
                  par(mfrow=c(1,2)) 
                  
                  probMan <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SN.SH.STA.STNT.Z
-                 print('Calculating MALNUTRITION probability')  
+                 print(paste('Calculating MALNUTRITION probability',probMan))  
                  if ( !is.null(probMan) ){ 
                    probMan <- as.numeric(probMan / 100)
                    binomial_plot (input$s,input$n,probMan,'')
@@ -454,17 +488,19 @@ function(input, output, session) {
                  probRU <- dfgender[ dfgender$country == input$bgender_country & dfgender$year == input$bgender_year, ]$SH.STA.SMSS.RU.ZS
                  
    
-                 print('Calculating URBAN probability') 
+                 print( paste('Calculating URBAN probability',probUR)) 
                  # urban population
                  if ( !is.null(probUR) ){ 
-                   probUR <- as.numeric(probUR / 100)
+                   probUR <- as.numeric(as.character(probUR))  # factor to numeric
+                   probUR <- round(probUR, digits = 2) /100
                    binomial_plot (input$s,input$n,probUR,'Urban population')
                  }
-                 print('Calculating RURAL probability')       
+                 print( paste('Calculating RURAL probability',probRU))       
                  # rural population
                  if ( !is.null(probRU) ){ 
-                   probRU <- as.numeric(probRU / 100)
-                   binomial_plot (input$s,input$n,probRU,'Rutal population') 
+                   probRU <- as.numeric(as.character(probRU))  # factor to numeric
+                   probRU <- round(probRU, digits = 2) /100
+                   binomial_plot (input$s,input$n,probRU,'Rural population') 
                  }
                  
                }

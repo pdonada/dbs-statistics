@@ -22,7 +22,7 @@ library(DT)
 
 
 ###############################################
-#            list of countries                #
+#      list of countries available            #
 countries <- c( 
   'Albania'='AL'
   ,'Algeria'='DZ'
@@ -186,12 +186,15 @@ bdbgender_series <- c('Access to anti-retroviral drugs' = 'access'
                     
 ###############################################
 # dataset 2: Population Statistics           ##
+
+# list of series available
 bdbpopulation_series <- c('Malnutrition prevalence, height for age (% of children under 5)' ='malnutrition'
                          ,'People using safely managed sanitation services' = 'sanitation')
 
+
 startYear = 2008
 endYear = 2018
-
+binomial_source = 'https://www.r-project.org/nosvn/pandoc/WDI.html'
 
 
 

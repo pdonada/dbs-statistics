@@ -141,7 +141,7 @@ fluidPage(theme = shinytheme("lumen"),
                                                       
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'binomial'",
-                                                        h6('Data source: http://datatopics.worldbank.org/world-development-indicators/')
+                                                        h6( paste('Data source:', binomial_source) )
                                                       )
                                                       , hr()
                                                       , plotOutput("plotProb")
