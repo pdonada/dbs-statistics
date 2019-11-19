@@ -62,32 +62,7 @@ fluidPage(theme = shinytheme("lumen"),
                                    numericInput("n", "Number of trials (n)" , value = 10, min = 0)
                                  ), 
                                  
-                                 ###############################################
-                                 ##           poisson distribution            ##
-                                 conditionalPanel(     
-                                   condition = "input.dismodel == 'poisson'", 
-                                   numericInput("lam", "Estimated rate of events (lambda)" 
-                                                , value = 1
-                                                , min = 0 ),
-                                   
-                                   h5("Inform other lambda values for comparison"),
-                                   numericInput("lam2", "Estimated rate of events (lambda 2)" 
-                                                , value = 0 , min = 0 ),
-                                   numericInput("lam3", "Estimated rate of events (lambda 3)" 
-                                                , value = 0 , min = 0 )
-                                 ), 
-                                 
-                                 conditionalPanel(     
-                                   condition = "input.dismodel == 'geometric'", 
-                                   numericInput("probg", "Probability of sucess (p)" 
-                                                , value = 0.5  # initial value
-                                                , min = 0      # Minimum allowed value
-                                                , max = 1      # Maximum allowed value
-                                                , step = 0.1   # Interval to use when stepping between min and max
-                                   ) 
-                                   
-                                 ), 
-                                 
+
                                  conditionalPanel(     
                                    condition = "input.dismodel == 'normal'", 
                                    numericInput("mu", "Mean (mu)" , value = 0), 
@@ -128,11 +103,11 @@ fluidPage(theme = shinytheme("lumen"),
                                                       )
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'cause'",
-                                                        h5('Lets check the probability that the cause of death is injury by gender.')
+                                                        h5('Lets check the probability that the cause of death is injury by gender (ages 15-34).')
                                                       )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'malnutrition'",
-                                                        h5('Lets check the probability of malnutrition prevalence, height for age (% of children under 5).')
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'measles'",
+                                                        h5('Lets check the probability of children aged 12-23 months being immunized to measles.')
                                                       )
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'sanitation'",
