@@ -176,10 +176,15 @@ fluidPage(theme = shinytheme("lumen"),
                                mainPanel(
 									tabsetPanel(
 									  tabPanel("Data Table",
-											   h5("Extructured table from your file (Millions U$)"),
-											   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
-											   DT::dataTableOutput("view1_pd")
-									  ),
+									           h4("Please, select country and year to filter"),
+									           h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640 | ! Please, upload file: gdp_database_tidy.csv"),
+									           DT::dataTableOutput("view6_pd")),
+									  
+									  #tabPanel("Data Table",
+										#	   h5("Extructured table from your file (Millions U$)"),
+										#	   h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
+										#	   DT::dataTableOutput("view1_pd")
+									  #),
 									  
 									  tabPanel("Summary",
 											   # Output: Header + summary of distribution ----
@@ -199,17 +204,17 @@ fluidPage(theme = shinytheme("lumen"),
 											   h5("Mean of GDP grouped by country showing TOP 10 GDP"),
 											   DT::dataTableOutput("view5_pd")),
 
-									  tabPanel("Table Config",
-									           h5("Table generated considering arguments selected"),
-											   DT::dataTableOutput("view6_pd")),
-											   
 									  tabPanel("Pie Chart", 
 											  h5("TOP 10 countries by GDPin Trillions of U$"),
 											  plotOutput("view7_pd")),
 									  
 									  tabPanel("Graphs", 
 									           h5("TOP 10 countries by GDPin Trillions of U$"),
-									           plotOutput("view8_pd"))
+									           plotOutput("view8_pd")),
+									  
+									  tabPanel("Heat Map", 
+									           h5("GDP-Mean by country representativity"),
+									           leafletOutput(outputId = "view9_pd"))
                                    
                                  )
                       
