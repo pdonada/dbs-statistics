@@ -12,6 +12,7 @@ if (!require("dplyr")) install.packages("dplyr")
 if (!require("plyr")) install.packages("plyr")
 if (!require("WDI")) install.packages("WDI")  # World Bank Development indicators
 if (!require("DT")) install.packages("DT")
+if (!require("leaflet")) install.packages("leaflet")
 
 library(shiny)
 library(shinythemes) 
@@ -19,6 +20,7 @@ library(dplyr)
 library(plyr)
 library(WDI)
 library(DT)
+library(leaflet)
 
 
 ###############################################

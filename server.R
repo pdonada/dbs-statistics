@@ -617,23 +617,23 @@ function(input, output, session) {
   ##########################################################################################################
   
   #TAB: Table
-  output$view1_pd <- DT::renderDataTable({
-    inFile_pd <- input$file1
-    
-    if (is.null(inFile_pd))
-      return(NULL)
-    
-    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
-                              sep = input$sep, quote = input$quote)
-    v_data_pd <- na.omit(file_read_pd)
-    v_data_pd  %>% 
-       rename ( c("country_name" = "Country" 
-                  , "country_code" = "Country code"
-                  , "year" = "Year"
-                  , "gdp_usd" = "GDP (Millions U$)"
-                  , "latitude" = "Latitude"
-                  , "longitude" = "Longitude") )
-  })  
+#  output$view1_pd <- DT::renderDataTable({
+#    inFile_pd <- input$file1
+#    
+#    if (is.null(inFile_pd))
+#      return(NULL)
+#    
+#    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+#                              sep = input$sep, quote = input$quote)
+#    v_data_pd <- na.omit(file_read_pd)
+#    v_data_pd  %>% 
+#       rename ( c("country_name" = "Country" 
+#                  , "country_code" = "Country code"
+#                  , "year" = "Year"
+#                  , "gdp_usd" = "GDP (Millions U$)"
+#                  , "latitude" = "Latitude"
+#                  , "longitude" = "Longitude") )
+#  })  
   
   #TAB: Summary - Summary
   output$view2_pd <- renderPrint({
@@ -736,7 +736,7 @@ function(input, output, session) {
                  , "longitude" = "Longitude") )
 })
   
-  ##TAB: Top Boxplot
+  ##TAB: Pie Chart
   output$view7_pd <- renderPlot({
     inFile_pd <- input$file1
     
@@ -751,9 +751,72 @@ function(input, output, session) {
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
-
+    
+    lbls <- factor(v_countryorder_pd[ ,1])
+    slices <- v_countryorder_pd$x
+    slicestril <- prettyNum(c(round(v_countryorder_pd$x/1000)), big.mark = ",", decimal.mark = ".")
+    lbls <- paste(lbls, slicestril) 
+    #lbls <- paste(lbls,"T",sep="") # ad % to labels
+    
+    pie(slices,labels = lbls, col=rainbow(length(lbls)), main="Top 10 GDP Countries in Trillions of U$", radius = 1.1)
 })
   
+  ##TAB: Graphs
+  output$view8_pd <- renderPlot({
+    inFile_pd <- input$file1
+    
+    if (is.null(inFile_pd))
+      return(NULL)
+    
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    v_data_pd <- na.omit(file_read_pd)
+    
+    #grouping by country/mean
+    v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
+    v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
+    v_countryorder_pd <- v_countryorder_pd[1:10,]
+    
+    lbls <- factor(v_countryorder_pd[ ,1])
+    slices <- round(v_countryorder_pd$x/1000)
+    slicestril <- prettyNum(c(round(slices)), big.mark = ",", decimal.mark = ".")
+    #lbls <- paste(lbls, slicestril) 
+    #lbls <- paste(lbls,"T",sep="") # ad % to labels
+    
+    par(las=2) # make label text perpendicular to axis
+    par(mar=c(5,9,4,2)) # increase y-axis margin.
+    barplot(slices, names.arg = lbls, col=rainbow(length(lbls)), horiz=TRUE, 
+            legend=slicestril, args.legend = list(x = "topright"))
+    })    
+  
+  ##TAB: Heat Map
+  output$view9_pd <- renderLeaflet({
+    
+    inFile_pd <- input$file1
+    
+    if (is.null(inFile_pd))
+      return(NULL)
+    
+    file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
+                             sep = input$sep, quote = input$quote)
+    v_data_pd <- na.omit(file_read_pd)
+    data_map <- aggregate(v_data_pd[, 4], by=list(v_data_pd$country_name, v_data_pd$latitude, v_data_pd$longitude), mean, 0)
+    colnames(data_map) <- c("country_name", "latitude", "longitude", "gdp_usd")
+    
+    caz <- data_map$gdp_usd / 40
+    qpal <- colorQuantile("YlOrRd", data_map$gdp_usd, n = 4)
+    
+    leaflet(data_map) %>% 
+      setView(lng = -6.2489, lat = 53.3331, zoom = 2)  %>% #setting the view over ~ center of North America
+      addTiles() %>% 
+      addCircles(data = data_map, lat = data_map$latitude, lng = data_map$longitude, 
+                 popup = ~data_map$country_name, radius = 100000, weight = 10,
+                 color = ~qpal(gdp_usd), fillOpacity = 1) %>%
+      addLegend("bottomright", pal = qpal, values = ~gdp_usd, 
+                title = "GDP - Mean", opacity = 1)
+  })    
+  
+    
   #Creating choices for Country and Year
   observe({ 
     inFile_pd <- input$file1
@@ -767,9 +830,11 @@ function(input, output, session) {
     all_c_pd <- data.frame("All")
     names(all_c_pd)<-names(countries_pd)
     countries_pd2 <- rbind(all_c_pd, countries_pd)
+    colnames(countries_pd2) <- c("Countries")
     
     years_pd <- data.frame(v_data_pd$year %>% unique())
     years_pd2 <- rbind(c("All"), years_pd)
+    colnames(years_pd2) <- c("Years")
     
     updateSelectInput(session, "gdp_country_pd", 
                       choices = countries_pd2)
