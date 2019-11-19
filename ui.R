@@ -188,16 +188,16 @@ fluidPage(theme = shinytheme("lumen"),
 									  
 									  tabPanel("Summary",
 											   # Output: Header + summary of distribution ----
-											   h5("Summary"),
+											   h4("Summary"),
 											   verbatimTextOutput("view2_pd"),
 											   
 											   # Output: Header + table of distribution ----
-											   h5("Observations"),
+											   h4("Observations"),
 											   tableOutput("view3_pd")
 									  ),
 									  
 									  tabPanel("Mean by Country", 
-											   h5("Mean of GDP grouped by country"),
+											   h4("Mean of GDP grouped by country"),
 											   DT::dataTableOutput("view4_pd")),
 									  
 									  tabPanel("Top 10", 

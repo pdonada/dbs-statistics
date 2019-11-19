@@ -743,9 +743,7 @@ function(input, output, session) {
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
-    data_map <- aggregate(v_data_pd[, 4], by=list(v_data_pd$country_name, v_data_pd$latitude, v_data_pd$longitude), mean, 0)
-    colnames(data_map) <- c("country_name", "latitude", "longitude", "gdp_usd")
-    
+     
     caz <- data_map$gdp_usd / 40
     qpal <- colorQuantile("YlOrRd", data_map$gdp_usd, n = 4)
     
