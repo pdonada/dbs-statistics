@@ -48,24 +48,27 @@ fluidPage(theme = shinytheme("lumen"),
                                             
                                             # Output: Header + table of distribution ----
                                             h4("Observations"),
-                                            tableOutput("view3_pd")
-                                   ),
+                                            tableOutput("view3_pd")),
                                    
                                    tabPanel("Mean by Country", 
                                             h4("GDP - Mean grouped by country in Millions U$"),
                                             DT::dataTableOutput("view4_pd")),
                                    
-                                   tabPanel("Top 10", 
-                                            h4("TOP 10 GDP in Millions U$"),
-                                            DT::dataTableOutput("view5_pd")),
-                                   
-                                   tabPanel("Pie Chart", 
-                                            h4("TOP 10 countries by GDP in Trillions of U$"),
-                                            plotOutput("view7_pd")),
-                                   
-                                   tabPanel("Bar Chart", 
-                                            h4("TOP 10 countries by GDP in Trillions of U$"),
-                                            plotOutput("view8_pd")),
+                                   tabPanel("Top 10",
+                                      tabsetPanel(
+                                        tabPanel("Table",
+                                                 h4("TOP 10 GDP in Millions U$"),
+                                                 DT::dataTableOutput("view5_pd")),
+                                        
+                                        tabPanel("Pie Chart", 
+                                                 h4("TOP 10 countries by GDP in Trillions of U$"),
+                                                 plotOutput("view7_pd")),
+                                        
+                                        tabPanel("Bar Chart", 
+                                                 h4("TOP 10 countries by GDP in Trillions of U$"),
+                                                 plotOutput("view8_pd"))
+                                        )
+                                      ),
                                    
                                    tabPanel("Heat Map", 
                                             h5("GDP-Mean by country representativity"),
