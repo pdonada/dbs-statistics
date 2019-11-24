@@ -13,6 +13,7 @@ if (!require("plyr")) install.packages("plyr")
 if (!require("WDI")) install.packages("WDI")  # World Bank Development indicators
 if (!require("DT")) install.packages("DT")
 if (!require("leaflet")) install.packages("leaflet")
+if (!require("epiDisplay")) install.packages("epiDisplay")
 
 library(shiny)
 library(shinythemes) 
@@ -21,6 +22,8 @@ library(plyr)
 library(WDI)
 library(DT)
 library(leaflet)
+library(epiDisplay)
+
 
 ###############################################
 #      list of countries available            #

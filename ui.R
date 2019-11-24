@@ -32,7 +32,8 @@ fluidPage(theme = shinytheme("lumen"),
                                  tabsetPanel(
                                    tabPanel("Data Table",
                                             h4("Please, select country and year to filter"),
-                                            h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640 | ! Please, upload file: gdp_database_tidy.csv"),
+                                            h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
+                                            h5("!Please, upload file: gdp_database_tidy.csv!"),
                                             DT::dataTableOutput("view6_pd")),
                                    
                                    #tabPanel("Data Table",
@@ -84,7 +85,7 @@ fluidPage(theme = shinytheme("lumen"),
                       ####################################################################################################
                       ##                                      PROBABILITY MODELS                                        ##
                       ####################################################################################################
-                      tabPanel("Probability", "",
+                      tabPanel("Probability",
                                
                                sidebarPanel( 
                                  
@@ -133,23 +134,17 @@ fluidPage(theme = shinytheme("lumen"),
                                    numericInput("n", "Number of trials (n)" , value = 10, min = 0)
                                  ), 
                                  
-
+                                 ###############################################
+                                 ##          normal   distribution            ##
                                  conditionalPanel(     
                                    condition = "input.dismodel == 'normal'", 
-                                   numericInput("mu", "Mean (mu)" , value = 0), 
-                                   numericInput("sigma", "Standard deviation (sigma)" , value = 1 , min = 0)
-                                 ),
-                                 
-                                 conditionalPanel(     
-                                   condition = "input.dismodel == 'exponential'", 
-                                   numericInput("lambda", "Estimated rate of events (lambda)" , value = 1 , min = 0 )
-                                   
-                                 ),
-                                 
-                                 
-                                 conditionalPanel(     
-                                   condition = "input.dismodel !== 'binomial' & input.dismodel !== 'exponential' ",
-                                   numericInput("max", "Upper limit for x" , value = 5, min = 0)
+                                   radioButtons("ndataset", "Data set",
+                                                choices = c("Blood pressure" = "bp"
+                                                )
+                                                , inline = TRUE),
+                                                
+                                   numericInput("norm_mu", "Mean (mu)" , value = 112), 
+                                   numericInput("norm_sigma", "Standard deviation (sigma)" , value = 10 , min = 0)
                                  ),
                                  
                                  conditionalPanel(     
@@ -165,36 +160,63 @@ fluidPage(theme = shinytheme("lumen"),
                                  tabsetPanel(type = "tabs", 
                                              tabPanel("Plot"
                                                       , conditionalPanel(     
-                                                            condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'access'",
-                                                            h5('Lets check the probability of accessing anti-retroviral drugs by gender.')
-                                                        )
+                                                            condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'access'"
+                                                            ,h5('Lets check the probability of accessing anti-retroviral drugs by gender.')
+                                                            ,hr()
+                                                      )
+                                                      
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'progression'",
-                                                        h5('Lets check the probability of progressing to secondary school by gender.')
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'progression'"
+                                                        ,h5('Lets check the probability of progressing to secondary school by gender.')
+                                                        ,hr()
                                                       )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'cause'",
-                                                        h5('Lets check the probability that the cause of death is injury by gender (ages 15-34).')
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'gender' & input.bgender_series == 'cause'"
+                                                        ,h5('Lets check the probability that the cause of death is injury by gender (ages 15-34).')
+                                                        ,hr()
                                                       )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'measles'",
-                                                        h5('Lets check the probability of children aged 12-23 months being immunized to measles.')
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'measles'"
+                                                        ,h5('Lets check the probability of children aged 12-23 months being immunized to measles.')
+                                                        ,hr()
                                                       )
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'sanitation'",
-                                                        h5('Lets check the probability of people using safely managed sanitation services on urban and rural areas.')
+                                                        condition = "input.dismodel == 'binomial' & input.bdataset == 'population' & input.bgender_series == 'sanitation'"
+                                                        ,h5('Lets check the probability of people using safely managed sanitation services on urban and rural areas.')
+                                                        ,hr()
                                                       )                                              
                                                       
                                                       , conditionalPanel(     
-                                                        condition = "input.dismodel == 'binomial'",
-                                                        h6( paste('Data source:', binomial_source) )
+                                                        condition = "input.dismodel == 'binomial'"
+                                                        ,h6( paste('Data source:', binomial_source) )
+                                                        ,hr()
                                                       )
-                                                      , hr()
+                                                      
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'normal'"
+                                                        ,h5('This dataset contains information on the records of 100 adults from a small cross-sectional survey in 2001 investigating blood pressure and its determinants in a community.')
+                                                        ,h6('Data source: Epidemiological Data Display Package in R (epiDisplay)')
+                                                        ,hr()
+                                                      )
+                                                      
                                                       , plotOutput("plotProb")
-                                                     ),
-                                             tabPanel("Data table", DT::dataTableOutput("tabProbBy")),
-                                             tabPanel("Data table (full)", DT::dataTableOutput("tabProb")) 
-                                 )
+                                                      
+                                                     ), # plot
+                                             
+                                             tabPanel("Data table", 
+                                                      conditionalPanel(     
+                                                        condition = "input.dismodel !== 'normal'", 
+                                                        h5('Information from the dataset by Country/Year selected.'),
+                                                        DT::dataTableOutput("tabProbBy")
+                                                      )
+                                             ),
+                                            
+                                             tabPanel("Data table (full)", 
+                                                      h5('All information from the dataset selected.'),
+                                                    #  DT::dataTableOutput("tabProb"),
+                                                      DT::dataTableOutput("tabProb")
+                                             ) 
+                                 )  # tabsetPanel tabs
                                  
                                )  # mainPanel
                                

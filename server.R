@@ -13,9 +13,19 @@ function(input, output, session) {
   ##########################################################################################################
   
   bdbgender <- reactive({ 
-    print( paste('start reactive', input$bgender_series))  
+    print( paste('**start reactive', input$bgender_series,'tab -', input$tabs))  
+    
+    if (input$dismodel != 'binomial'){
+      print('end reactive')
+      return(NULL)
+    }
     
     if (input$bgender_series == ''){
+      print('end reactive')
+      return(NULL)
+    }
+    
+    if (input$tabs != 'Probability'){
       print('end reactive')
       return(NULL)
     }
@@ -86,7 +96,7 @@ function(input, output, session) {
                bdataset_populationUR =  WDI(indicator = indicatorUR, country = countries , start = startYear, end = endYear)
                bdataset_populationUR <- bdataset_populationUR %>% na.omit()  # ignore lines with missing information
                bdataset_populationUR <- bdataset_populationUR %>% 
-                 select(iso2c, country, year, SH.STA.SMSS.UR.ZS)
+                 dplyr::select(iso2c, country, year, SH.STA.SMSS.UR.ZS)
                print(paste('nro col UR', nrow(bdataset_populationUR) ))   
                
                print(paste('indicator RU',indicatorRU,'syear', startYear, 'eyear'=endYear)) 
@@ -97,7 +107,7 @@ function(input, output, session) {
                bdataset_populationRU =  WDI(indicator = indicatorRU, country = countries , start = startYear, end = endYear)
                bdataset_populationRU <- bdataset_populationRU %>%  na.omit()  # ignore lines with missing information
                bdataset_populationRU <- bdataset_populationRU %>% 
-                 select(iso2c, country, year, SH.STA.SMSS.RU.ZS)
+                 dplyr::select(iso2c, country, year, SH.STA.SMSS.RU.ZS)
                print(paste('nro col RU', nrow(bdataset_populationRU))) 
                
                # Increment the progress bar, and update the detail text.
@@ -244,28 +254,29 @@ function(input, output, session) {
   
   # table tab
   output$tabProb <- DT::renderDataTable( {
-    print(paste('Generating table -', input$bgender_series)) 
-    
+  
     if (input$dismodel == 'binomial') { 
+      print(paste('Generating table -', input$bgender_series)) 
+      
       if (input$bdataset == 'gender'){
         
         switch(input$bgender_series,  
                
                access = { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)  %>%   
+                   dplyr::select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)  %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.HIV.ARTC.MA.ZS" = "Male(%)", "SH.HIV.ARTC.FE.ZS" = "Female(%)") )
                }, 
                
                progression =  { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS) %>%   
-                   rename( c("country" = "Country", "year" = "Year","SE.SEC.PROG.FE.ZS" = "Male(%)", "SE.SEC.PROG.FE.ZS" = "Female(%)") )                
+                   dplyr::select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SE.SEC.PROG.MA.ZS" = "Male(%)", "SE.SEC.PROG.FE.ZS" = "Female(%)") )                
                },  
                
                cause =   { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
+                   dplyr::select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.DTH.INJR.1534.MA.ZS" = "Male(%)", "SH.DTH.INJR.1534.FE.ZS" = "Female(%)") )               
                }
         )
@@ -276,29 +287,43 @@ function(input, output, session) {
                
                measles = { 
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SH.IMM.MEAS) %>%   
+                   dplyr::select(country, year, SH.IMM.MEAS) %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.IMM.MEAS" = "(% of children ages 12-23 months)") )                 
                  
                },
                
                sanitation = {
                  dfgender <- data.frame(bdbgender()) %>% 
-                   select(country, year, SH.STA.SMSS.UR.ZS, SH.STA.SMSS.RU.ZS) %>%   
+                   dplyr::select(country, year, SH.STA.SMSS.UR.ZS, SH.STA.SMSS.RU.ZS) %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.STA.SMSS.UR.ZS" = "(% of urban population)", "SH.STA.SMSS.RU.ZS" = "(% of rural population)") )                  
                }
             ) 
       }
       
-    }else { "Not available"}
+    }else { 
+      
+      data(BP)
+      dfgender <- data.frame(BP)
+      dfgender %>% 
+        dplyr::select(sex, sbp, dbp, saltadd, birthdate)  %>%   
+        rename( c("sex" = "Gender"
+                  ,"sbp" = "Systolic"
+                  ,"dbp" = "Diastolic"
+                  ,"saltadd" = "Salt added on table" 
+                  ,"birthdate" = "Birth date")
+             )
+      
+    }
     
   }) # output$tabProb 
   
   
   # table tab
   output$tabProbBy <- DT::renderDataTable( {
-    print( paste('Generating table by',input$bgender_country, input$bgender_year))
     
     if (input$dismodel == 'binomial') { 
+        print( paste('Generating table by',input$bgender_country, input$bgender_year))
+      
   #    if (input$bdataset == 'gender'){
         
         if (input$bgender_country == "" || input$bgender_year == "") {
@@ -307,57 +332,63 @@ function(input, output, session) {
         
         df <- data.frame(bdbgender())
         df <- df[ df$country == input$bgender_country & df$year == input$bgender_year, ]
-     
+   
         switch(input$bgender_series,  
                
                access = { 
                    df %>% 
-                   select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)  %>%   
+                   dplyr::select(country, year, SH.HIV.ARTC.MA.ZS, SH.HIV.ARTC.FE.ZS)  %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.HIV.ARTC.MA.ZS" = "Male(%)", "SH.HIV.ARTC.FE.ZS" = "Female(%)") )
                }, 
                
                progression =  { 
                    df %>% 
-                   select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS) %>%   
-                   rename( c("country" = "Country", "year" = "Year","SE.SEC.PROG.FE.ZS" = "Male(%)", "SE.SEC.PROG.FE.ZS" = "Female(%)") )                
+                   dplyr::select(country, year, SE.SEC.PROG.MA.ZS, SE.SEC.PROG.FE.ZS) %>%   
+                   rename( c("country" = "Country", "year" = "Year","SE.SEC.PROG.MA.ZS" = "Male(%)", "SE.SEC.PROG.FE.ZS" = "Female(%)") )                
                },  
                
                cause =   { 
                    df %>% 
-                   select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
+                   dplyr::select(country, year, SH.DTH.INJR.1534.MA.ZS, SH.DTH.INJR.1534.FE.ZS) %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.DTH.INJR.1534.MA.ZS" = "Male(%)", "SH.DTH.INJR.1534.FE.ZS" = "Female(%)") )               
                },
                
                measles =   { 
                  df %>% 
-                   select(country, year, SH.IMM.MEAS) %>%   
+                   dplyr::select(country, year, SH.IMM.MEAS) %>%   
                    rename( c("country" = "Country", "year" = "Year", "SH.IMM.MEAS" = "(% of children ages 12-23 months)" ) )               
                },
                
                sanitation =   { 
                  df %>% 
-                   select(country, year, SH.STA.SMSS.UR.ZS, SH.STA.SMSS.RU.ZS) %>%   
+                   dplyr::select(country, year, SH.STA.SMSS.UR.ZS, SH.STA.SMSS.RU.ZS) %>%   
                    rename( c("country" = "Country", "year" = "Year","SH.STA.SMSS.UR.ZS" = "(% of urban population)", "SH.STA.SMSS.RU.ZS" = "(% of rural population)") )               
                }
         )
         
   #    }
       
-    }else { "Not available"}
+    }else { 
+      
+      return(NULL)
+      
+    }
     
-  }) # output$tabProb 
+  }) # output$tabProbBy 
 
   # plot tab
   output$plotProb <- renderPlot({ 
-    print(paste('Starting PLOT -',input$bgender_series, input$bdataset,input$bgender_country, input$bgender_year))  
     
-    if (input$bgender_series == '' || input$bgender_country =='' || input$bgender_year == ''){
-      print('end PLOT')
-      return(NULL)
-    }
-    
+    ####################################################################################    
     # binomial  - discrete model
     if (input$dismodel == 'binomial') { 
+      
+      print(paste('Starting BINOMIAL PLOT -',input$bgender_series, input$bdataset,input$bgender_country, input$bgender_year))  
+      
+      if (input$bgender_series == '' || input$bgender_country =='' || input$bgender_year == ''){
+        print('end PLOT')
+        return(NULL)
+      }
       
       validate(
         probability_validation(input$n, 'n', input$dismodel)
@@ -452,46 +483,70 @@ function(input, output, session) {
         )
       }
       
-      print('end PLOT')   
+      print('end BINOMIAL PLOT')   
     } 
     
-
+    ####################################################################################
     # normal  - continuous model
     if (input$dismodel == 'normal') { 
       
+      print(paste('Starting NORMAL PLOT -',input$norm_mu, input$norm_sigma))  
+      
+      if (input$norm_sigma == '' || is.na(input$norm_sigma) || input$norm_mu =='' || is.na(input$norm_mu)){
+        print('end PLOT')
+        return(NULL)
+      }
+      
       validate(
-        probability_validation(input$mu, 'mu', input$dismodel),
-        probability_validation(input$sigma, 'sigma', input$dismodel),
-        probability_validation(input$max, 'x', input$dismodel)
-      )       
+        probability_validation(input$norm_mu, 'mu', input$dismodel),
+        probability_validation(input$norm_sigma, 'sigma', input$dismodel)
+      )  
       
-      par(mfrow=c(1,2))  
-      x= seq(-input$max,input$max,0.1)
+      data(BP)
+      dfgender <- data.frame(BP)
       
-      y= dnorm(x,input$mu,input$sigma)  # pdf 
-      plot(x, y, type='l', main = "Probability density function" , xlab = "" , ylab = "Density", col='red') 
+      par(mfrow=c(2,3))
+      
+      # Systolic blood pressure
+      norm_sbp = dfgender$sbp
+      
+      print('Printing Histogram - Systolic')
+      
+      hist(norm_sbp, probability=TRUE, main='Histogram of Systolic', xlab = 'x')   # histogram
+      norm_seq <- seq( from = min(norm_sbp), to = max(norm_sbp), length = 100)
+      lines(norm_seq, dnorm(norm_seq, mean = input$norm_mu, sd = input$norm_sigma), col="blue")
+      
+      print('Printing PDF')
+      
+      norm_y= dnorm(norm_seq, mean = input$norm_mu, sd = input$norm_sigma)   # pdf 
+      plot(norm_seq, norm_y, type='l', main = "Probability density function - Systolic" , xlab = "" , ylab = "Density", col='red') 
+      
+      print('Printing CDF')
+      norm_y1= pnorm(norm_seq, mean = input$norm_mu, sd = input$norm_sigma)  # cdf 
+      plot(norm_seq, norm_y1, type='l', main = 'Cumulative density function - Systolic' , xlab = "" , ylab = "Cumulative probability", col='red')  
+    
+      # Diastolic blood pressure
+      norm_sbp = dfgender$dbp
+      
+      print('Printing Histogram - Diastolic')
+      
+      hist(norm_sbp, probability=TRUE, main = 'Histogram of Diastolic')   # histogram
+      norm_seq <- seq( from = min(norm_sbp), to = max(norm_sbp), length = 100)
+      lines(norm_seq, dnorm(norm_seq, mean = input$norm_mu, sd = input$norm_sigma), col="blue")
+      
+      print('Printing PDF')
+      
+      norm_y= dnorm(norm_seq, mean = input$norm_mu, sd = input$norm_sigma)   # pdf 
+      plot(norm_seq, norm_y, type='l', main = "Probability density function - Diastolic" , xlab = "" , ylab = "Density", col='red') 
+      
+      print('Printing CDF')
+      norm_y1= pnorm(norm_seq, mean = input$norm_mu, sd = input$norm_sigma)  # cdf 
+      plot(norm_seq, norm_y1, type='l', main = 'Cumulative density function - Diastolic' , xlab = "" , ylab = "Cumulative probability", col='red')  
       
       
-      y1= pnorm(x,input$mu,input$sigma)  # cdf 
-      plot(x, y1, type='l', main = 'Cumulative density function' , xlab = "" , ylab = "Cumulative probability", col='red')  
+      print('end NORMAL PLOT')  
     } 
     
-    # exponential  - continuous model
-    if (input$dismodel == 'exponential') { 
-      
-      validate(
-        probability_validation(input$lambda, 'lambda', input$dismodel)
-      )   
-      
-      par(mfrow=c(1,2))  
-      x=seq(0,input$s,0.1)
-      
-      y=  dexp(x,input$lambda)  # pdf 
-      plot(x, y, type='l', main = "Probability density function" , xlab = "" , ylab = "Density", col='red') 
-      
-      y1= pexp(x,input$lambda)  # cdf 
-      plot(x, y1, type='l', main = "Cumulative density function" , xlab = "" , ylab = "Cumulative probability",col='red')  
-    } 
     
   })    # output$plotProb
   
@@ -558,15 +613,16 @@ function(input, output, session) {
                              sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
     
+    print('grouping by country/mean')
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
     
     v_countrym_pd <- v_countrym_pd  %>% 
                       rename ( c("Group.1" = "Country"
-                                 ,"x" = "Mean")) 
+                                 ,"mean.v_data_pd[, 4]" = "Mean")) 
     
     DT::datatable(v_countrym_pd)  %>% 
-      formatCurrency(c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
+      formatCurrency( c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
   })
   
   #TAB: Top 10
@@ -579,15 +635,16 @@ function(input, output, session) {
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
-    
+    print('top 10 - grouping by country/mean')
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
-    v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
-    v_countryorder_pd <- v_countryorder_pd[1:10,]
     
-    v_countryorder_pd <- v_countryorder_pd  %>% 
+    v_countrym_pd <- v_countrym_pd  %>% 
       rename ( c("Group.1" = "Country"
-                 ,"x" = "Mean")) 
+                 ,"mean.v_data_pd[, 4]" = "Mean")) 
+    
+    v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(- Mean)),]
+    v_countryorder_pd <- v_countryorder_pd[1:10,]
     
     DT::datatable(v_countryorder_pd)  %>% 
       formatCurrency(c('Mean'), currency = '', interval = 3, mark = ',', before = FALSE) 
@@ -636,9 +693,13 @@ function(input, output, session) {
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
-    
+    print('top 10 - pie chart')
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
+    
+    v_countrym_pd <- v_countrym_pd  %>% 
+      rename ( c("mean.v_data_pd[, 4]" = "x")) 
+    
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
     
@@ -661,9 +722,13 @@ function(input, output, session) {
     file_read_pd <- read.csv(inFile_pd$datapath, header = input$header,
                              sep = input$sep, quote = input$quote)
     v_data_pd <- na.omit(file_read_pd)
-    
+    print('top 10 - bar chart')
     #grouping by country/mean
     v_countrym_pd <- aggregate(v_data_pd[, 4], list(v_data_pd$country_name), mean, 0)
+    
+    v_countrym_pd <- v_countrym_pd  %>% 
+      rename ( c("mean.v_data_pd[, 4]" = "x")) 
+    
     v_countryorder_pd <- v_countrym_pd[with(v_countrym_pd,order(-x)),]
     v_countryorder_pd <- v_countryorder_pd[1:10,]
     
