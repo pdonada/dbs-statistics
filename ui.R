@@ -205,15 +205,18 @@ fluidPage(theme = shinytheme("lumen"),
                                              
                                              tabPanel("Data table", 
                                                       conditionalPanel(     
-                                                        condition = "input.dismodel !== 'normal'", 
+                                                        condition = "input.dismodel == 'binomial'", 
                                                         h5('Information from the dataset by Country/Year selected.'),
                                                         DT::dataTableOutput("tabProbBy")
+                                                      )
+                                                      , conditionalPanel(     
+                                                        condition = "input.dismodel == 'normal'", 
+                                                        h5('Not available for this model.')
                                                       )
                                              ),
                                             
                                              tabPanel("Data table (full)", 
                                                       h5('All information from the dataset selected.'),
-                                                    #  DT::dataTableOutput("tabProb"),
                                                       DT::dataTableOutput("tabProb")
                                              ) 
                                  )  # tabsetPanel tabs
