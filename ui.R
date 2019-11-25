@@ -33,7 +33,7 @@ fluidPage(theme = shinytheme("lumen"),
                                    tabPanel("Data Table",
                                             h4("Please, select country and year to filter"),
                                             h6("Source: https://databank.worldbank.org/GDP_by_Country/id/bba0f640"),
-                                            h5("!Please, upload file: gdp_database_tidy.csv!"),
+                                            h5("!Please, upload file: gdp_database_tidy.csv (folder Display on GitHub"),
                                             DT::dataTableOutput("view6_pd")),
                                    
                                    #tabPanel("Data Table",
