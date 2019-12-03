@@ -171,7 +171,6 @@ selectDiscreteDist <- c('Binomial' = 'binomial'
                         )
 
 selectContinuousDist <- c('Normal' = 'normal'
-                      #  , 'Exponential' = 'exponential'
                         )
 
 ###############################################
@@ -253,15 +252,6 @@ probability_validation <- function(value, parameter, model) {
       }
     }
     
-  }else if ( model == 'exponential' ){
-    if ( !( is.numeric(value) & !is.na(value) ) ){
-      paste('*** Invalid', parameter,'value (Not numeric) ***') 
-      
-    }else{
-      if ( value <0 ) {
-        paste('*** Invalid',parameter,'value (min = 0) ***') 
-      }
-    }
   }
   
 }

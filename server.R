@@ -9,9 +9,9 @@
 function(input, output, session) {
   
   ##########################################################################################################
-  ###Render Probability navtab 
+  ### Render Probability navtab 
+  ###load the database selected 
   ##########################################################################################################
-  
   bdbgender <- reactive({ 
     print( paste('**start reactive', input$bgender_series,'tab -', input$tabs))  
     
@@ -175,7 +175,10 @@ function(input, output, session) {
     
   })  # reactive function - series
   
-  
+  ##################################################
+  ## PROBABILITY MODELS
+  ## Show the list of models available as per
+  ## type of distribution selected
   observe({ 
     switch(input$distype,
            discrete = {  
@@ -192,6 +195,10 @@ function(input, output, session) {
     ) 
   }) # observe type of model
   
+  ##################################################
+  ## PROBABILITY MODELS
+  ## Show the list of series available as per
+  ## model selected
   observe({ 
  
     print(paste( 'observe - list of series', input$bdataset)) 
@@ -215,6 +222,10 @@ function(input, output, session) {
   }) # observe list of series
   
   
+  ##################################################
+  ## PROBABILITY MODELS
+  ## Show the list of countries available as per
+  ## model/serie selected  
   observe({ 
     
     if (input$bgender_series == "") {
@@ -233,7 +244,10 @@ function(input, output, session) {
     
   }) # observe list of countries
   
-  
+  ##################################################
+  ## PROBABILITY MODELS
+  ## Show the list of years available as per
+  ## model/serie/country selected
   observe({ 
     
     if (input$bgender_country == "") {
@@ -252,7 +266,9 @@ function(input, output, session) {
   })  # observe list of years
   
   
-  # table tab
+  ##################################################
+  ## PROBABILITY MODELS
+  ## build a table to show the full dataset selected
   output$tabProb <- DT::renderDataTable( {
   
     if (input$dismodel == 'binomial') { 
@@ -318,14 +334,15 @@ function(input, output, session) {
   }) # output$tabProb 
   
   
-  # table tab
+  ##################################################
+  ## PROBABILITY MODELS
+  ## build a table to show the data used to build 
+  ## the graphs
   output$tabProbBy <- DT::renderDataTable( {
     
     if (input$dismodel == 'binomial') { 
         print( paste('Generating table by',input$bgender_country, input$bgender_year))
       
-  #    if (input$bdataset == 'gender'){
-        
         if (input$bgender_country == "" || input$bgender_year == "") {
           return (NULL)
         } 
@@ -366,8 +383,6 @@ function(input, output, session) {
                }
         )
         
-  #    }
-      
     }else { 
       
       return(NULL)
@@ -376,7 +391,9 @@ function(input, output, session) {
     
   }) # output$tabProbBy 
 
-  # plot tab
+  ##################################################
+  ## PROBABILITY MODELS
+  ## build the graphs based on the dataset selected
   output$plotProb <- renderPlot({ 
     
     ####################################################################################    
