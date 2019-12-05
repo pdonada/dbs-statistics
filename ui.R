@@ -230,7 +230,154 @@ fluidPage(theme = shinytheme("lumen"),
                       ####################################################################################################
                       ##                                  HYPOTHESIS TESTING                                            ##
                       ####################################################################################################        
-                      tabPanel("OtherTopic", "This panel is intentionally left blank"),
+                      tabPanel("Hypothesis Testing",
+
+                               mainPanel(
+
+                                 tabsetPanel(
+
+                                   tabPanel("t-Test",
+
+                                            column(1),
+                                            withMathJax(p(),p(),p("A t-test is any ", strong("hypothesis test"), " in which the ", strong("test statistic"), " follows ", strong("Student's t distribution"),
+                                                                  "if the ", strong("null hypothesis"), "is true. Some common t-tests are:")),br(),
+
+                                            code("One-sample t-test:",style="color:f8f8f8"),
+                                            p(HTML("<ul> <li type=square> the parameter of interest is the population mean, &mu;<li type=square>"),p(),
+                                              p("t-statistic = \\(\\frac{\\bar x -\\mu_0}{s_{x}/\\sqrt{n}}\\)"), HTML("</ul>")),br(),
+
+                                            code("Two-sample t-test:",style="color:f8f8f8"),
+                                            p(HTML("<ul> <li type=square> the parameter of interest is the difference between the two population means, &mu;<sub>1</sub>-&mu;<sub>2</sub> <li type=square>"),p(),
+                                              p("t-statistic = \\(\\frac{(\\bar x_1 - \\bar x_2) -(\\mu_1-\\mu_2)}{\\sqrt{\\frac{s_{1}^2}{n_1} + \\frac{s_{2}^2}{n_2}}}\\)"), HTML("</ul>")),
+                                            column(1)
+
+                                   ),
+
+                                   tabPanel("Data Exploration",
+
+                                            tabsetPanel(
+
+                                              tabPanel("Sample Data",
+
+                                                       fluidRow(
+
+                                                         column(3,
+                                                                wellPanel(
+                                                                  selectInput("sampdat", "Choose a data set:", choices=list("One-sample"=1,"Two-sample"=2), selected=1),
+                                                                  bsPopover(id="sampdat", title="Data set information", content="Please chose the type of t-test.",trigger="hover",placement="right"),
+                                                                  checkboxInput("usedata", "Use sample data", TRUE),
+                                                                  bsTooltip("usedata","Uncheck this when not using sample data!","right"),
+                                                                  tags$hr(),
+                                                                  p(strong("One-sample data:"), " Quarterly UK gas consumption from 1960Q1 to 1986Q4, in millions of therms."),
+                                                                  br(),
+                                                                  p(strong("Two-sample data:"), " On-time data for UA (United Airlines) and DL (Delta Airlines) flights that departed from NYC in 2013. Arrival delays, in minutes. Negative times represent early arrivals."),
+                                                                  br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br()
+                                                                  )),
+
+                                                         column(9,
+                                                                conditionalPanel(
+                                                                  condition="input.usedata",
+                                                                  h5("All information from the dataset selected."),br(),
+                                                                  dataTableOutput("data.tab1")))
+
+                                                       )
+
+                                              ),
+
+                                              tabPanel("Upload Data",
+
+                                                       fluidRow(
+
+                                                         column(3,
+                                                                wellPanel(
+                                                                  fileInput("file","Choose file to upload (csv):",accept=c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                                                  bsPopover("file","Note", "Remember to select the correct data format after uploading file!  Hover over the Select data format panel for more information.",
+                                                                            trigger="hover",placement="right"),
+                                                                  p("Remember to uncheck sample data to use uploaded data!"),
+                                                                  tags$hr(),
+                                                                  radioButtons("datformat", strong("Select data format:"), choices=c("1-sample"=1,Stacked=2,Unstacked=3), selected=1),
+                                                                  bsPopover("datformat","Data format", "Select Stacked for 2-sample with explanatory and response variables in two columns.  Select Unstacked with explanatory variable as column names and response variable in two columns",
+                                                                            trigger="hover",placement="right"),
+                                                                  tags$hr(),
+                                                                  strong("Customize file format:"),
+                                                                  checkboxInput("header", "Header", TRUE),
+                                                                  radioButtons("sep", "Separator:", choices=c(Comma=",",Semicolon=";",Tab="\t"), selected=","),
+                                                                  radioButtons("quote", "Quote", choices=c(None="","Double Quote"='"',"Single Quote"="'"),selected=""),
+                                                                  br(),br(),br())),
+
+                                                         column(9,
+                                                                conditionalPanel(
+                                                                  condition="input.file!='NULL'",
+                                                                  dataTableOutput("data.tab"))))
+
+                                              ),
+
+                                              tabPanel("Visualize Data",
+                                                       
+                                                       fluidRow(
+                                                         column(7,
+                                                              br(),
+                                                              plotOutput("datagraph")),
+                                                         column(7,
+                                                                br(),br(),
+                                                                p(strong("Summary")),
+                                                                tableOutput("summarystats"))))
+
+                                            )),
+                                   
+
+                                   tabPanel("Hypothesis Test",
+                                            
+                                            fluidRow(
+                                              column(3,
+                                                     wellPanel(
+                                                       conditionalPanel(
+                                                         condition="input.datformat==1 && input.sampdat==1",
+                                                         h4("Hypotheses:"),
+                                                         uiOutput("hypo1"),
+                                                         tags$hr(),
+                                                         numericInput("null1", label="Hypothesized value:", value=0),
+                                                         selectInput("alt1", "Select a direction for Ha:", choices=list("two-sided","less than","greater than"),selected="two-sided")),
+                                                       conditionalPanel(
+                                                         condition="input.datformat!=1 || input.sampdat==2",
+                                                         h4("Hypotheses:"),
+                                                         uiOutput("hypo2"),
+                                                         tags$hr(),
+                                                         numericInput("null2", label="Hypothesized value:", value=0),
+                                                         selectInput("alt2", label="Select a direction for Ha:", choices=list("two-sided","less than","greater than"),selected="two-sided")),
+                                                       sliderInput("alpha", label=HTML("Significance level &alpha;:"), value=.05, max=1, min=0, step=.01),
+                                                       tags$hr(),
+                                                       actionButton("teststart", "Execute t-Test"),
+                                                       br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),br()
+                                                       )),
+                                              
+                                              column(9,
+                                                     br(),br(),
+                                                     conditionalPanel(
+                                                       condition="input.teststart>0",
+                                                       column(10,
+                                                              plotOutput("tdist"),
+                                                              bsPopover("tdist","p-value","The p-value is the shaded region. A large p-value indicates to fail to reject Ho and no evidence for Ha.  A small p-value indicates to reject the Ho and evidence for Ha.",
+                                                                        trigger="hover",placement="left"),br()),
+                                                       column(5,br(),
+                                                              strong("Test output:"),
+                                                              tableOutput("test"),br(),
+                                                              strong("Point estimate(s):"),
+                                                              uiOutput("est"),br(),br(),
+                                                              strong("Confidence interval:"),
+                                                              tableOutput("citab"),
+                                                              bsPopover("citab","Confidence interval sample interpretation","We are 95% confident that the true parameter is anywhere between the lower bound to the upper bound.",
+                                                                        trigger="hover",placement="bottom"))))))
+                                            
+                                            
+
+                                 ) # tabsetPanel
+
+                               ) # mainPanel
+
+
+                       ), # tabPanel Hipothesis Testing
+                      
                       
                       
                       ####################################################################################################
