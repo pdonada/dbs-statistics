@@ -14,6 +14,9 @@ if (!require("WDI")) install.packages("WDI")  # World Bank Development indicator
 if (!require("DT")) install.packages("DT")
 if (!require("leaflet")) install.packages("leaflet")
 if (!require("epiDisplay")) install.packages("epiDisplay")
+if (!require("ggplot2")) install.packages("ggplot2") # walbert
+if (!require("shinyBS")) install.packages("shinyBS") # walbert
+if (!require("nycflights13")) install.packages("nycflights13") # walbert
 
 library(shiny)
 library(shinythemes) 
@@ -23,7 +26,9 @@ library(WDI)
 library(DT)
 library(leaflet)
 library(epiDisplay)
-
+library(ggplot2) # walbert
+library(shinyBS) # walbert
+library(nycflights13) # walbert
 
 ###############################################
 #      list of countries available            #
@@ -254,4 +259,59 @@ probability_validation <- function(value, parameter, model) {
     
   }
   
+}
+
+#walbert
+###############################################
+##       t-distribution  Function            ##
+###############################################
+
+t.dist.area = function(tstat,tail,df)
+{
+  x = seq(-5,5,length.out=200)
+  df = round(df, digits=3)
+  
+  if(tail=="right")
+  {
+    xmin=tstat
+    xmax=5
+    
+    area = seq(xmin,xmax,length.out=300)
+    dat = data.frame(x=area,ymin=0,ymax=dt(area,df=df))
+    
+    graph = ggplot() + geom_line(data.frame(x=x, y=dt(x,df=df)), mapping=aes(x=x, y=y)) + 
+      geom_ribbon(data=dat, mapping=aes(x=x, ymin=ymin, ymax=ymax), fill="blue1") + 
+      ggtitle(paste("t-distribution with", df, "degrees of freedom")) +
+      xlab("t-values") + ylab("Relative frequency") + theme_gray  ()
+  } else if(tail=="left")
+  {
+    xmin=-5
+    xmax=tstat
+    
+    area = seq(xmin,xmax,length.out=300)
+    dat = data.frame(x=area,ymin=0,ymax=dt(area,df=df))
+    
+    graph = ggplot() + geom_line(data.frame(x=x, y=dt(x,df=df)), mapping=aes(x=x, y=y)) + 
+      geom_ribbon(data=dat, mapping=aes(x=x, ymin=ymin, ymax=ymax), fill="blue1") +
+      ggtitle(paste("t-distribution with", df, "degrees of freedom")) +
+      xlab("t-values") + ylab("Relative frequency") + theme_gray ()
+  } else if(tail=="both")
+  {
+    xmin1=abs(tstat)
+    xmax1=5
+    area1 = seq(xmin1,xmax1,length.out=300)
+    dat1 = data.frame(x=area1,ymin1=0,ymax1=dt(area1,df=df))
+    
+    xmin2=-5
+    xmax2=-abs(tstat)
+    area2 = seq(xmin2,xmax2,length.out=300)
+    dat2 = data.frame(x=area2,ymin2=0,ymax2=dt(area2,df=df))
+    
+    graph = ggplot() + geom_line(data.frame(x=x, y=dt(x,df=df)), mapping=aes(x=x, y=y)) + 
+      geom_ribbon(data=dat1, mapping=aes(x=x, ymin=ymin1, ymax=ymax1),fill="blue1") +
+      geom_ribbon(data=dat2, mapping=aes(x=x, ymin=ymin2, ymax=ymax2),fill="blue1") +
+      ggtitle(paste("t-distribution with", df, "degrees of freedom")) +
+      xlab("t-values") + ylab("Relative frequency") + theme_gray ()
+  }
+  return(graph)
 }
