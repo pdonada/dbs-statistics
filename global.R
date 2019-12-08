@@ -202,7 +202,7 @@ bdbpopulation_series <- c('Immunization - measles (children ages 12-23 months)' 
 startYear = 2008
 endYear = 2018
 binomial_source = 'https://www.r-project.org/nosvn/pandoc/WDI.html'
-
+normal_source = 'Epidemiological Data Display Package in R (epiDisplay)'
 
 
 ###############################################

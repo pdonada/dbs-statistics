@@ -195,7 +195,8 @@ fluidPage(theme = shinytheme("lumen"),
                                                       , conditionalPanel(     
                                                         condition = "input.dismodel == 'normal'"
                                                         ,h5('This dataset contains information on the records of 100 adults from a small cross-sectional survey in 2001 investigating blood pressure and its determinants in a community.')
-                                                        ,h6('Data source: Epidemiological Data Display Package in R (epiDisplay)')
+                                                        ,hr()
+                                                        ,h6(paste('Data source:', normal_source))
                                                         ,hr()
                                                       )
                                                       

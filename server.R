@@ -519,7 +519,8 @@ function(input, output, session) {
         probability_validation(input$norm_sigma, 'sigma', input$dismodel)
       )  
       
-      data(BP)
+      print('Loading BP dataset...')
+      data(BP , package = "epiDisplay", overwrite = TRUE)
       dfgender <- data.frame(BP)
       
       par(mfrow=c(2,3))
@@ -820,7 +821,7 @@ function(input, output, session) {
   ##########################################################################################################
   
 
-  data <- reactive({
+  data_hypothesis <- reactive({
     if(is.null(input$file) & !input$usedata)
     {
       return(NULL)
@@ -852,31 +853,31 @@ function(input, output, session) {
   })
 
   output$data.tab = renderDataTable({
-    if(!input$usedata) data()
+    if(!input$usedata) data_hypothesis()
   })
   
   output$data.tab1 = renderDataTable({
-    if(input$usedata) data()
+    if(input$usedata) data_hypothesis()
   })
   
   ####
   output$datagraph = renderPlot({
     if((input$datformat==1 & !input$usedata) | (input$sampdat!=2 & input$usedata)) 
     {
-      dat=unlist(data())
+      dat=unlist(data_hypothesis())
       dat1=data.frame(x=as.numeric(as.character(dat)))
       
       if(input$usedata)
         lab = "Gas consumption in millions of therms"
       else
-        lab = paste(names(data())[1])
+        lab = paste(names(data_hypothesis())[1])
       
       ggplot(data=dat1) + geom_histogram(aes(x=x), fill="red", alpha=.5) +
         xlab(lab) + ylab("Frequency") +
         ggtitle(paste("Histogram of",lab)) + theme_bw()
     } else if((input$datformat==2 & !input$usedata) | (input$sampdat!=1 & input$usedata))
     {
-      dat=data()
+      dat=data_hypothesis()
       dat1=data.frame(x=dat[[1]],y=dat[[2]])
       if(length(unique(dat1$x))>length(unique(dat1$y)))
       {
@@ -897,7 +898,7 @@ function(input, output, session) {
       }
     } else if((input$datformat==3 & !input$usedata) | (input$sampdat!=1 & input$usedata))
     {
-      dat=data()
+      dat=data_hypothesis()
       dat1=data.frame(x=c(as.numeric(as.character(dat[[1]])),as.numeric(as.character(dat[[2]]))),
                       y=c(rep(names(dat)[1],length(dat[[1]])),rep(names(dat)[2],length(dat[[2]]))))
       ggplot(data=dat1) + geom_boxplot(aes(x=factor(y),y=x,fill=factor(y)),alpha=.5) + 
@@ -910,20 +911,20 @@ function(input, output, session) {
   output$summarystats = renderTable({
     if((input$datformat==1 & !input$usedata) | (input$sampdat!=2 & input$usedata))
     {
-      vec = as.numeric(as.character(data()[[1]]))
+      vec = as.numeric(as.character(data_hypothesis()[[1]]))
       table = t(matrix(c((as.matrix(summary(vec)[1:6])),
                          round(sd(vec,na.rm=TRUE)))))
       
       if(input$usedata)
         rownames(table) = "Eruption times"
       else
-        rownames(table) = names(data())[[1]]
+        rownames(table) = names(data_hypothesis())[[1]]
       
       colnames(table) = c("Min","Q1","Median","Mean","Q3","Max","SD")
       return(table)
     } else if((input$datformat==2 & !input$usedata) | (input$sampdat!=1 & input$usedata))
     {
-      dat=data()
+      dat=data_hypothesis()
       dat1=data.frame(x=dat[[1]],y=dat[[2]])
       if(length(unique(dat1$x)) > length(unique(dat1$y)))
       {
@@ -956,7 +957,7 @@ function(input, output, session) {
       }
     } else if((input$datformat==3 & !input$usedata) | (input$sampdat!=1 & input$usedata))
     {
-      dat = data()
+      dat = data_hypothesis()
       dat[,1] = as.numeric(as.character(dat[,1]))
       dat[,2] = as.numeric(as.character(dat[,2]))
       table = data.frame(t(as.matrix(apply(dat,2,summary)[-7,])))
@@ -1017,14 +1018,14 @@ function(input, output, session) {
         if((input$datformat==1 & !input$usedata) | (input$sampdat!=2 & input$usedata))
         {
           if(input$alt1=="less than") 
-            mod = t.test(x=as.numeric(as.character(unlist(data()))),alternative="less",mu=input$null1,conf.level=1-input$alpha)
+            mod = t.test(x=as.numeric(as.character(unlist(data_hypothesis()))),alternative="less",mu=input$null1,conf.level=1-input$alpha)
           else if(input$alt1=="greater than") 
-            mod = t.test(x=as.numeric(as.character(unlist(data()))),alternative="greater",mu=input$null1,conf.level=1-input$alpha)
+            mod = t.test(x=as.numeric(as.character(unlist(data_hypothesis()))),alternative="greater",mu=input$null1,conf.level=1-input$alpha)
           else 
-            mod = t.test(x=as.numeric(as.character(unlist(data()))),alternative="two.sided",mu=input$null1,conf.level=1-input$alpha)
+            mod = t.test(x=as.numeric(as.character(unlist(data_hypothesis()))),alternative="two.sided",mu=input$null1,conf.level=1-input$alpha)
         } else if((input$datformat==2 & !input$usedata) | (input$sampdat!=1 & input$usedata))
         {
-          dat=data()
+          dat=data_hypothesis()
           if(length(unique(dat[[1]])) > length(unique(dat[[2]])))
           {
             if(input$alt2=="less than")
@@ -1050,7 +1051,7 @@ function(input, output, session) {
           }
         } else if((input$datformat==3 & !input$usedata) | (input$sampdat!=1 & input$usedata))
         {
-          dat=data()
+          dat=data_hypothesis()
           if(input$alt2=="less than")
             mod = t.test(x=as.numeric(as.character(dat[[1]])),y=as.numeric(as.character(dat[[2]])),
                          alternative="less",mu=input$null2,conf.level=1-input$alpha)
