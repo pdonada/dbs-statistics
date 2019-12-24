@@ -4,8 +4,11 @@ Deadline: 6th December 2019
 
 Group:
 Amanda McDonneli;    # GLM
+
 Juliana Salvadori;   # Probabilistic Model / GLM
+
 Peterson Donada;     # Descriptive analytics
+
 Walbert Fabricio de Oliveira.  # Hypothesis testing
 
 ****************************************************************************
