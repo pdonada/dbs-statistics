@@ -3,10 +3,10 @@ Assingment 1 (30%)
 Deadline: 6th December 2019
 
 Group:
-Amanda McDonneli; 
-Juliana Salvadori;
-Peterson Donada;
-Walbert Fabricio de Oliveira.
+Amanda McDonneli;    # GLM
+Juliana Salvadori;   # Probabilistic Model / GLM
+Peterson Donada;     # Descriptive analytics
+Walbert Fabricio de Oliveira.  # Hypothesis testing
 
 ****************************************************************************
 Guideline:
