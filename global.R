@@ -30,6 +30,8 @@ library(ggplot2) # walbert
 library(shinyBS) # walbert
 library(nycflights13) # walbert
 
+data(longley)  # GLM dataset
+
 ###############################################
 #      list of countries available            #
 countries <- c( 
@@ -314,4 +316,31 @@ t.dist.area = function(tstat,tail,df)
       xlab("t-values") + ylab("Relative frequency") + theme_gray ()
   }
   return(graph)
+}
+
+
+###############################################
+##       glm function                        ##
+###############################################
+glm_apply_model <- function(pi_input, pi_output, pi_model, pi_dataset, pi_trainset) {
+  
+  if ( length(pi_input) == 1 ){
+    
+    fit <- glm(pi_dataset[,pi_output] ~ pi_dataset[,pi_input] , data = pi_trainset , family = pi_model)
+    names( fit$coefficients) <- c("Intercept", pi_input)
+    
+  }else if ( length(pi_input) == 2 ){
+    fit <- glm(pi_dataset[,pi_output] ~ pi_dataset[,pi_input[1]] + pi_dataset[,pi_input[2]] , data = pi_trainset , family = pi_model)
+    names( fit$coefficients) <- c("Intercept", pi_input[1], pi_input[2])
+    
+  }else if ( length(pi_input) == 3 ){
+    fit <- glm(pi_dataset[,pi_output] ~ pi_dataset[,pi_input[1]] + pi_dataset[,pi_input[2]] + pi_dataset[,pi_input[3]], data = pi_trainset , family = pi_model)
+    names( fit$coefficients) <- c("Intercept", pi_input[1], pi_input[2], pi_input[3])
+    
+  }else if ( length(pi_input) == 4 ){
+    fit <- glm(pi_dataset[,pi_output] ~ pi_dataset[,pi_input[1]] + pi_dataset[,pi_input[2]] + pi_dataset[,pi_input[3]] + pi_dataset[,pi_input[4]], data = pi_trainset , family = pi_model)
+    names( fit$coefficients) <- c("Intercept", pi_input[1], pi_input[2], pi_input[3], pi_input[4])
+  }
+  
+  return (fit)
 }

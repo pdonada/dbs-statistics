@@ -380,13 +380,63 @@ fluidPage(theme = shinytheme("lumen"),
                        ), # tabPanel Hipothesis Testing
                       
                       
-                      
                       ####################################################################################################
                       ##                                  GENERALIZED LINEAR MODELS                                     ##
                       ####################################################################################################                      
-                      tabPanel("OtherTopic", "This panel is intentionally left blank")
-                      
-                      
+                      tabPanel("Generalized Linar Models",
+                               sidebarPanel(
+      
+                                 # Select a dataset
+                                 selectInput("glm_dataset", "Select the dataset:",
+                                             choices = c('Longley' = 'longley')),
+                                 
+                                 # select the outcome (target) variable
+                                 selectInput("glm_output", 'Select the outcome variable',
+                                             choices =    c("GNP" = "GNP",
+                                                            "Unemployed" = "Unemployed",
+                                                            "Armed Forces" = "Armed.Forces",
+                                                            "Population" = "Population",
+                                                            "Employed" = "Employed")
+                                             , selected = 1),
+                                 
+                                 # select the input (independent) variables
+                                 selectizeInput("glm_input", 'Select the independent variables',
+                                                choices =    c("GNP" = "GNP",
+                                                               "Unemployed" = "Unemployed",
+                                                               "Armed Forces" = "Armed.Forces",
+                                                               "Population" = "Population",
+                                                               "Employed" = "Employed")
+                                                , multiple = TRUE),
+                                 
+                                 # type of regression to be applied on the dataset
+                                 radioButtons("glm_model", "Select the type of regession",
+                                              choices = c("Linar" = "gaussian",
+                                                          #   "Logistic" = "binomial",
+                                                          "Poisson" = "poisson")
+                                              , inline = TRUE),
+                                 
+                                 h6('*Note that Logistic regression is not applicable for this dataset.'),
+                                 
+                                 sliderInput("glmslider", "Select the ratio for trainset" ,min=1, max=100, value = 80)
+                                 
+                                 
+                               ),  # sidebarPanel
+                               
+                               mainPanel(
+                                 tabsetPanel(type = "tabs",
+                                             tabPanel("Model Summary", verbatimTextOutput("glm_summary") ), # Regression output
+                                             tabPanel("Model analysis", verbatimTextOutput("glm_analysis") ), # Regression output
+                                             tabPanel("Scatterplot", plotOutput("glm_scatterplot")), # Plot
+                                             tabPanel("Distribution", # Plots of distributions
+                                                      fluidRow(
+                                                        column(6, plotOutput("glm_distribution1")),
+                                                        column(6, plotOutput("glm_distribution2")))
+                                             ),
+                                             tabPanel("Data", DT::dataTableOutput('glm_table')) # Data as datatable
+                                  )
+                               ) # mainPanel
+                               
+                      )  # GENERALIZED LINEAR MODELS
                       
           ) # navbarPage
           

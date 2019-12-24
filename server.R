@@ -10,7 +10,7 @@ function(input, output, session) {
   
   ##########################################################################################################
   ### Render Probability navtab 
-  ###load the database selected 
+  ###l oad the database selected 
   ##########################################################################################################
   bdbgender <- reactive({ 
     print( paste('**start reactive', input$bgender_series,'tab -', input$tabs))  
@@ -816,11 +816,10 @@ function(input, output, session) {
                       choices = years_pd2)  
   })
   
- ##########################################################################################################
+  ##########################################################################################################
   ###Render HYPOTHESIS TESTING navtab
   ##########################################################################################################
   
-
   data_hypothesis <- reactive({
     if(is.null(input$file) & !input$usedata)
     {
@@ -1119,11 +1118,164 @@ function(input, output, session) {
   })
   
   
-  
   ##########################################################################################################
   ###Render GENERALIZED LINEAR MODELS navtab
   ##########################################################################################################  
   
+  ########################################################
+  # GLM 
+  # update list of independent variables available
+  observe({ 
+    var = c("GNP" = "GNP",
+            "Unemployed" = "Unemployed",
+            "Armed Forces" = "Armed.Forces",
+            "Population" = "Population",
+            "Employed" = "Employed")
+    
+    new_var = NULL
+    index   = 1
+    for (i in 1:length(var) ){
+      if (var[i] != input$glm_output){
+        new_var[index] = var[i]
+        index = index+1
+      }
+    }
+    
+    updateSelectInput(session, "glm_input", 
+                      choices = new_var
+    ) 
+  }) 
+  
+  
+  ########################################################
+  # GLM 
+  # Apply the selected model
+  output$glm_summary <- renderPrint({
+    
+    
+    if ( length(input$glm_input) == 0 ){
+      return('Select the independent variables.')
+    }    
+    
+    glmdataset <- na.omit(longley)
+    
+    glm_fit_summary <- summary( glm_apply_model(input$glm_input,input$glm_output,input$glm_model, glmdataset, glmdataset) )
+    
+    print( glm_fit_summary )
+    
+  })
+  
+  ########################################################
+  # GLM 
+  # Analysis of the model
+  output$glm_analysis <- renderPrint({
+    
+    glmdataset <- na.omit(longley)
+    
+    glm_fit <- summary( glm_apply_model(input$glm_input,input$glm_output, input$glm_model, glmdataset, glmdataset) )
+    
+    print('-------------------------------------------------------------------')
+    print(paste('Target variable:', input$glm_output))
+    print('Independent variables:')
+    for (i in 1:length(input$glm_input)) { 
+      print(input$glm_input[i])
+    }
+    
+    print('-------------------------------------------------------------------')
+    alpha = 0.05
+    print(paste('Lets consider alpha =',alpha))
+    
+    print('----- Parameters estimation----------------------------------------')
+    print(paste('Intercept =',glm_fit$coefficients[1][1]))
+    index = 1
+    for (i in 1:length(input$glm_input)) { 
+      index = index + 1
+      print(paste(input$glm_input[i],' =', glm_fit$coefficients[index][1]))
+    }
+    
+    print('----- Effective variables on the target variable ------------------')
+    index = 1
+    if (coef(glm_fit)[index,4] < alpha) {
+      print(paste('Intercept','is significant as p-value < alpha.'))
+    }else{
+      print(paste('Intercept','is NOT significant as p-value > alpha.'))
+    }
+    
+    for (i in 1:length(input$glm_input)) { 
+      index = index + 1
+      if (coef(glm_fit)[index,4] < alpha) {
+        print(paste(input$glm_input[i],'is significant as p-value < alpha.'))
+      }else{
+        print(paste(input$glm_input[i],'is NOT significant as p-value > alpha.'))
+      }
+    }
+    
+    print('-------------------------------------------------------------------')
+    print('----- Training the model ------------------------------------------')
+    # split the dataset to trainset and testset 
+    n = nrow(glmdataset) 
+    indexes = sample(n, n*(input$glmslider/100)) 
+    trainset= glmdataset[indexes,] 
+    testset = glmdataset[-indexes,]
+  
+    # Fitting the Model  
+    glm_fit_train <- glm_apply_model(input$glm_input,input$glm_output, input$glm_model, glmdataset, trainset)
+    
+    print('----- Predicted values  -------------------------------------------')
+    pred_test = predict(glm_fit_train, testset)  
+    print(pred_test)
+    
+    print('----------------------- RMSE --------------------------------------')
+    # RMSE
+    actual = testset[,input$glm_output] 
+    rmse = sqrt((sum((pred_test-actual)^2)/nrow(testset))) 
+    print(paste('RMSE =',round(rmse,4)))
+    
+ #   print('--------------------- ACCURACY -----------------------------------')
+    # accuracy
+#    actual = testset[,input$glm_output] # actual values for the target variable (y) to be used on the confusion matrix 
+ #   pred_y = ifelse(pred_test>=0.5,1,0)     
+ #   print('pred_y*************')
+ #   print(pred_y)
+ #   print('actual*************')
+ #   print(actual)
+    # create confusion matrix 
+    #  tab1 = table(pred_y, actual)  
+    #  accuracy = sum(tab1 [row(tab1) == col(tab1)])/ sum(tab1) 
+    # print(paste('Accuracy =',accuracy))
+    
+  })
+  
+  ########################################################
+  # GLM 
+  # Data output
+  output$glm_table = DT::renderDataTable({
+    DT::datatable(longley, options = list(lengthChange = FALSE))
+  })
+  
+  ########################################################
+  # GLM 
+  # Scatterplot output
+  output$glm_scatterplot <- renderPlot({
+    plot(longley[,input$glm_input], longley[,input$glm_output], main="Scatterplot",
+         xlab=input$glm_input, ylab=input$glm_output, pch=19)
+    abline(lm(longley[,input$glm_output] ~ longley[,input$glm_input]), col="red")
+    lines(lowess(longley[,input$glm_input],longley[,input$glm_output]), col="blue")
+  }, height=400)
+  
+  ########################################################
+  # GLM 
+  # Histogram output var 1
+  output$glm_distribution1 <- renderPlot({
+    hist(longley[,input$glm_output], main="", xlab=input$glm_output)
+  }, height=300, width=300)
+  
+  ########################################################
+  # GLM 
+  # Histogram output var 2
+  output$glm_distribution2 <- renderPlot({
+    hist(longley[,input$glm_input], main="", xlab=input$glm_input)
+  }, height=300, width=300)
   
   
 }
